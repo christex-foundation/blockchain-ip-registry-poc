@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { AppProviders } from '@/components/app-providers'
-import { LandingLayout } from '@/components/landing-layout'
+import { AppLayoutWrapper } from '@/components/app-layout-wrapper'
 import React from 'react'
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" suppressHydrationWarning>
       <body className={`antialiased`}>
         <AppProviders>
-          <LandingLayout>{children}</LandingLayout>
+          <AppLayoutWrapper>{children}</AppLayoutWrapper>
         </AppProviders>
       </body>
     </html>
