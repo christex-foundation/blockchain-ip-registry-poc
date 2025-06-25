@@ -55,26 +55,7 @@ function DashboardContent() {
   }, [getAccessToken])
 
   const handleDistributeRoyalties = async (workId: string) => {
-    try {
-      const accessToken = await getAccessToken()
-      if (!accessToken) {
-        toast.error('Failed to get access token')
-        return
-      }
-
-      // Mock amount for demonstration - in production this would come from a form
-      const amount = 1.0 // 1 SOL
-
-      const response = await apiClient.distributeRoyalties(workId, amount, accessToken)
-      
-      if (response.success) {
-        toast.success(`Royalty distribution initiated for work ${workId}`)
-        console.log('Distribution result:', response.distribution)
-      }
-    } catch (error) {
-      console.error('Failed to distribute royalties:', error)
-      toast.error('Failed to distribute royalties')
-    }
+    toast.info(`Distribution feature coming in Week 3! Work ID: ${workId}`)
   }
 
   if (isLoading) {
@@ -260,13 +241,6 @@ function DashboardContent() {
             )}
           </CardContent>
         </Card>
-
-        {/* Development Notice */}
-        <div className="text-center text-sm text-muted-foreground glass rounded-lg p-4">
-          <p>✅ Privy Authentication Integrated</p>
-          <p>✅ Server-side API Connected</p>
-          <p>🚧 Blockchain operations will be implemented in upcoming phases</p>
-        </div>
       </div>
     </div>
   )

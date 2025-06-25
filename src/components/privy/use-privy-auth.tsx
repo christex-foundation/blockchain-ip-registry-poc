@@ -14,6 +14,7 @@ export function usePrivyAuth() {
     unlinkEmail,
     exportWallet,
     createWallet,
+    getAccessToken: privyGetAccessToken,
   } = usePrivy()
 
   // Get the user's embedded Solana wallet
@@ -30,17 +31,18 @@ export function usePrivyAuth() {
 
   // Get user's access token for API calls
   const getAccessToken = useCallback(async () => {
-    if (!authenticated) return null
+    if (!authenticated) {
+      return null
+    }
     
     try {
-      // This method gets the JWT token for server-side authentication
-      const token = await (window as unknown as { Privy?: { getAccessToken?: () => Promise<string> } }).Privy?.getAccessToken?.()
+      const token = await privyGetAccessToken()
       return token
     } catch (error) {
       console.error('Error getting access token:', error)
       return null
     }
-  }, [authenticated])
+  }, [authenticated, privyGetAccessToken])
 
   // Login with email
   const loginWithEmail = useCallback(async () => {

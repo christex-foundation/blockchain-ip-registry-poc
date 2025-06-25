@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyPrivyToken } from '@/lib/privy-server'
-import { createWorkMetadata, uploadMetadataToIPFS } from '@/lib/solana-server'
+import {
+  createWorkMetadata,
+  createMetadataReference,
+  mintWorkNFT,
+  getUserSolanaWalletFromPrivy,
+} from '@/lib/solana-server'
 import { WorkRepository } from '@/lib/repositories/work-repository'
 import { ContributorRepository } from '@/lib/repositories/contributor-repository'
 import { UserRepository } from '@/lib/repositories/user-repository'
@@ -35,11 +40,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 })
     }
 
+    // Get user's Solana wallet from Privy
+    let userWallet
+    try {
+      userWallet = await getUserSolanaWalletFromPrivy(verifiedClaims.userId)
+    } catch (walletError) {
+      console.error('Wallet retrieval error:', walletError)
+      return NextResponse.json(
+        {
+          error: 'User must have a Solana wallet connected to register works',
+        },
+        { status: 400 },
+      )
+    }
+
     // Ensure user exists in our database
     await UserRepository.upsertUserByPrivyId({
       privy_user_id: verifiedClaims.userId,
       email: null, // Email will be available through Privy user data
-      embedded_wallet_address: null, // Will be updated later when we get wallet info
+      embedded_wallet_address: userWallet.address,
     })
 
     // Parse request body
@@ -57,6 +76,18 @@ export async function POST(request: NextRequest) {
     )
     if (totalShares !== 100) {
       return NextResponse.json({ error: 'Contributor shares must total 100%' }, { status: 400 })
+    }
+
+    // Validate wallet addresses
+    for (const contributor of workData.contributors) {
+      if (!contributor.walletAddress || contributor.walletAddress.length < 32) {
+        return NextResponse.json(
+          {
+            error: `Invalid wallet address for contributor: ${contributor.name}`,
+          },
+          { status: 400 },
+        )
+      }
     }
 
     // Check if ISRC already exists
@@ -84,8 +115,8 @@ export async function POST(request: NextRequest) {
 
     const contributors = await ContributorRepository.createMultipleContributors(contributorsData)
 
-    // Create metadata
-    const metadata = createWorkMetadata({
+    // Create metadata using the new server-side approach
+    const { coreMetadata, extendedMetadata } = createWorkMetadata({
       title: workData.title,
       isrc: workData.isrc,
       contributors: workData.contributors.map((contributor) => ({
@@ -97,36 +128,88 @@ export async function POST(request: NextRequest) {
       imageUrl: workData.imageUrl,
     })
 
-    // Upload metadata to IPFS
-    const metadataUri = await uploadMetadataToIPFS(metadata)
+    // Create metadata reference (hybrid on-chain/off-chain approach)
+    const metadataUri = await createMetadataReference(work.id, extendedMetadata)
 
     // Update work with metadata URI
     const updatedWork = await WorkRepository.updateMetadataUri(work.id, metadataUri)
 
-    // For future: mint NFT and update with mint address
-    // const mintResult = await mintWorkNFT(metadata, metadataUri)
-    // await WorkRepository.updateNftMintAddress(work.id, mintResult.mintAddress)
+    // Mint NFT using server-side Metaplex Core
+    try {
+      const mintResult = await mintWorkNFT({
+        workId: work.id,
+        ownerAddress: userWallet.address,
+        metadata: {
+          name: coreMetadata.name,
+          uri: metadataUri,
+        },
+      })
 
-    return NextResponse.json({
-      success: true,
-      work: {
-        id: updatedWork.id,
-        title: updatedWork.title,
-        isrc: updatedWork.isrc,
-        contributors: contributors.map((c) => ({
-          id: c.id,
-          name: c.name,
-          walletAddress: c.wallet_address,
-          share: c.royalty_share,
-        })),
-        metadataUri: updatedWork.metadata_uri,
-        mintAddress: updatedWork.nft_mint_address,
-        createdAt: updatedWork.created_at,
-        createdBy: verifiedClaims.userId,
-      },
-    })
+      // Update work with NFT mint address (convert PublicKey to string)
+      const finalWork = await WorkRepository.updateNftMintAddress(work.id, mintResult.assetId.toString())
+
+      console.log('Work registered and NFT minted successfully:', {
+        workId: work.id,
+        assetId: mintResult.assetId.toString(),
+        signature: mintResult.signature,
+      })
+
+      return NextResponse.json({
+        success: true,
+        work: {
+          id: finalWork.id,
+          title: finalWork.title,
+          isrc: finalWork.isrc,
+          contributors: contributors.map((c) => ({
+            id: c.id,
+            name: c.name,
+            walletAddress: c.wallet_address,
+            share: c.royalty_share,
+          })),
+          metadataUri: finalWork.metadata_uri,
+          mintAddress: finalWork.nft_mint_address,
+          createdAt: finalWork.created_at,
+          createdBy: verifiedClaims.userId,
+        },
+        nft: {
+          assetId: mintResult.assetId.toString(),
+          signature: mintResult.signature,
+          explorerUrl: `https://explorer.solana.com/address/${mintResult.assetId.toString()}?cluster=devnet`,
+        },
+      })
+    } catch (mintError) {
+      console.error('NFT minting failed:', mintError)
+
+      // Return work data even if minting failed - user can retry minting later
+      return NextResponse.json({
+        success: true,
+        work: {
+          id: updatedWork.id,
+          title: updatedWork.title,
+          isrc: updatedWork.isrc,
+          contributors: contributors.map((c) => ({
+            id: c.id,
+            name: c.name,
+            walletAddress: c.wallet_address,
+            share: c.royalty_share,
+          })),
+          metadataUri: updatedWork.metadata_uri,
+          mintAddress: null,
+          createdAt: updatedWork.created_at,
+          createdBy: verifiedClaims.userId,
+        },
+        warning: 'Work registered but NFT minting failed. Please try again.',
+        error: mintError instanceof Error ? mintError.message : 'Unknown minting error',
+      })
+    }
   } catch (error) {
     console.error('Work registration error:', error)
-    return NextResponse.json({ error: 'Failed to register work' }, { status: 500 })
+    return NextResponse.json(
+      {
+        error: 'Failed to register work',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 },
+    )
   }
 }
