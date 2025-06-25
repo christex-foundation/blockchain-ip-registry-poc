@@ -198,6 +198,213 @@ Overall Success Rate: 100% (62/62)
 
 - Database connections (Supabase)
 - Authentication services (Privy)
+
+## Dual Storage Testing Strategy (NEW)
+
+### Overview
+
+With the implementation of dual storage (on-chain + off-chain) for NFT metadata, we need comprehensive testing to ensure data consistency and reliability between Solana blockchain storage and Supabase database storage.
+
+### Test Categories for Dual Storage
+
+#### 1. On-Chain Attribute Tests
+
+```typescript
+// Test on-chain attribute creation
+describe('createOnChainAttributes', () => {
+  it('should create proper attributes from work and contributors')
+  it('should handle missing ISRC gracefully')
+  it('should handle empty contributors array')
+  it('should convert numeric values to strings for on-chain storage')
+})
+```
+
+#### 2. Off-Chain Metadata Tests
+
+```typescript
+// Test off-chain metadata structure
+describe('createWorkMetadata', () => {
+  it('should create compliant NFT metadata structure')
+  it('should include all required fields')
+  it('should properly format contributor information')
+  it('should handle missing optional fields')
+})
+```
+
+#### 3. Dual Storage Consistency Tests
+
+```typescript
+// Test data consistency between storage methods
+describe('Dual Storage Consistency', () => {
+  it('should maintain data consistency between on-chain and off-chain')
+  it('should handle partial failures gracefully')
+  it('should validate metadata schema compliance')
+  it('should ensure attribute key-value pairs match across storage')
+})
+```
+
+#### 4. Enhanced API Endpoint Tests
+
+```typescript
+// Test metadata API endpoint with dual storage
+describe('Metadata API Route', () => {
+  it('should return both on-chain and off-chain metadata')
+  it('should handle missing NFT mint address')
+  it('should handle on-chain fetch errors gracefully')
+  it('should validate metadata consistency in response')
+  it('should return proper error responses')
+  it('should expose database fields for debugging')
+})
+```
+
+#### 5. NFT Minting Integration Tests
+
+```typescript
+// Test complete minting workflow with dual storage
+describe('NFT Minting with Dual Storage', () => {
+  it('should mint NFT with on-chain attributes using Metaplex Core')
+  it('should store metadata reference off-chain in Supabase')
+  it('should update work record with mint address')
+  it('should handle minting failures gracefully')
+  it('should validate attribute plugin creation')
+  it('should ensure consistent data between storages')
+})
+```
+
+### New Test Files to Create
+
+#### 1. Solana Server Tests
+
+**Location**: `src/lib/__tests__/solana-server.test.ts`
+
+- Test on-chain attribute creation
+- Test metadata storage functions
+- Test asset attribute retrieval
+- Test error handling for blockchain operations
+
+#### 2. Metadata API Tests
+
+**Location**: `src/app/api/metadata/[workId]/__tests__/route.test.ts`
+
+- Test complete metadata retrieval flow
+- Test on-chain and off-chain data combination
+- Test error scenarios and graceful degradation
+- Test data consistency validation
+
+#### 3. Work Registration Enhanced Tests
+
+**Location**: `src/app/api/works/register/__tests__/route.test.ts` (enhance existing)
+
+- Test dual storage during work registration
+- Test NFT minting with attributes
+- Test rollback scenarios on failures
+
+### Testing Data Consistency
+
+#### Key Consistency Checks
+
+```typescript
+// Validate that on-chain and off-chain data match
+const validateConsistency = (offChainMetadata, onChainAttributes) => {
+  const offChainTitle = offChainMetadata.name
+  const onChainTitle = onChainAttributes.find((attr) => attr.key === 'title')?.value
+  expect(offChainTitle).toBe(onChainTitle)
+
+  const offChainIsrc = offChainMetadata.properties.ip_data.isrc
+  const onChainIsrc = onChainAttributes.find((attr) => attr.key === 'isrc')?.value
+  expect(offChainIsrc).toBe(onChainIsrc)
+
+  const offChainShares = offChainMetadata.properties.ip_data.total_shares
+  const onChainShares = parseInt(onChainAttributes.find((attr) => attr.key === 'total_shares')?.value || '0')
+  expect(offChainShares).toBe(onChainShares)
+}
+```
+
+### Mock Strategy for Blockchain Testing
+
+#### Metaplex Core Mocking
+
+```typescript
+vi.mock('@metaplex-foundation/mpl-core', () => ({
+  mplCore: vi.fn(),
+  fetchAsset: vi.fn(),
+  createV1: vi.fn(),
+  pluginAuthorityPair: vi.fn(),
+}))
+```
+
+#### UMI Framework Mocking
+
+```typescript
+vi.mock('@metaplex-foundation/umi-bundle-defaults', () => ({
+  createUmi: vi.fn(() => ({
+    use: vi.fn().mockReturnThis(),
+    identity: { publicKey: 'mock-public-key' },
+  })),
+}))
+```
+
+### Error Handling Scenarios
+
+#### 1. Partial Storage Failures
+
+- On-chain success, off-chain failure
+- Off-chain success, on-chain failure
+- Network connectivity issues
+- Invalid data format errors
+
+#### 2. Data Synchronization Issues
+
+- Attribute count mismatches
+- Value format inconsistencies
+- Missing required fields
+- Type conversion errors
+
+### Performance Testing Considerations
+
+#### 1. Metadata Retrieval Performance
+
+- Test response times for combined metadata
+- Validate caching mechanisms
+- Test concurrent request handling
+
+#### 2. Minting Performance
+
+- Test NFT creation with attributes
+- Validate transaction confirmation times
+- Test batch operations efficiency
+
+### Test Implementation Priority
+
+#### Phase 1 (Immediate)
+
+1. Basic on-chain attribute creation tests
+2. Metadata API endpoint tests
+3. Error handling tests
+
+#### Phase 2 (Next Sprint)
+
+1. Complete integration tests
+2. Performance tests
+3. Consistency validation tests
+
+#### Phase 3 (Future)
+
+1. Load testing with multiple concurrent operations
+2. Stress testing with large attribute sets
+3. Long-running consistency validation
+
+### Expected Test Coverage Increase
+
+With dual storage implementation:
+
+- **New Test Files**: 2-3 additional test files
+- **Additional Tests**: ~30-40 new test cases
+- **Coverage Areas**: Blockchain integration, metadata consistency, error handling
+- **Total Expected Tests**: ~90-100 tests (from current 62)
+
+This enhanced testing strategy ensures that the dual storage functionality is robust, reliable, and maintains data consistency across both on-chain and off-chain storage systems.
+
 - HTTP requests (fetch API)
 - File storage (IPFS)
 
