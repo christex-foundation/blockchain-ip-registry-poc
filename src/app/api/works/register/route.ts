@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Create metadata reference (hybrid on-chain/off-chain approach)
-    const metadataUri = await createMetadataReference(work.id, extendedMetadata)
+    const metadataUri = await createMetadataReference(parseInt(work.id), extendedMetadata)
 
     // Update work with metadata URI
     const updatedWork = await WorkRepository.updateMetadataUri(work.id, metadataUri)
@@ -143,15 +143,23 @@ export async function POST(request: NextRequest) {
           name: coreMetadata.name,
           uri: metadataUri,
         },
+        contributors: workData.contributors.map((contributor) => ({
+          name: contributor.name,
+          wallet: contributor.walletAddress,
+          share: contributor.share,
+        })),
+        isrc: workData.isrc,
+        description: workData.description,
       })
 
       // Update work with NFT mint address (convert PublicKey to string)
       const finalWork = await WorkRepository.updateNftMintAddress(work.id, mintResult.assetId.toString())
 
-      console.log('Work registered and NFT minted successfully:', {
+      console.log('Work registered and NFT minted successfully with on-chain attributes:', {
         workId: work.id,
         assetId: mintResult.assetId.toString(),
         signature: mintResult.signature,
+        onChainAttributes: mintResult.onChainAttributes,
       })
 
       return NextResponse.json({
@@ -175,6 +183,7 @@ export async function POST(request: NextRequest) {
           assetId: mintResult.assetId.toString(),
           signature: mintResult.signature,
           explorerUrl: `https://explorer.solana.com/address/${mintResult.assetId.toString()}?cluster=devnet`,
+          onChainAttributes: mintResult.onChainAttributes,
         },
       })
     } catch (mintError) {

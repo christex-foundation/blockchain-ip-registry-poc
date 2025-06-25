@@ -1,9 +1,10 @@
 import { Connection, Keypair, PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
 import { generateSigner, keypairIdentity, Umi, publicKey as toUmiPublicKey } from '@metaplex-foundation/umi'
-import { create, mplCore, fetchAsset, AssetV1 } from '@metaplex-foundation/mpl-core'
+import { mplCore, fetchAsset, AssetV1, pluginAuthorityPair, createV1, Attribute } from '@metaplex-foundation/mpl-core'
 import { fromWeb3JsKeypair } from '@metaplex-foundation/umi-web3js-adapters'
 import { privyServer } from './privy-server'
+import { WorkRepository } from './repositories/work-repository'
 
 // Solana connection configuration
 const SOLANA_RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com'
@@ -30,6 +31,56 @@ export function createUmiInstance(): Umi {
   }
 
   return umi
+}
+
+/**
+ * Convert work data to on-chain attributes for Metaplex Core
+ */
+export function createOnChainAttributes(workData: {
+  title: string
+  isrc?: string
+  contributors: Array<{
+    name: string
+    wallet: string
+    share: number
+  }>
+  workId: string
+  description?: string
+}): Attribute[] {
+  const totalShares = workData.contributors.reduce((sum, contributor) => sum + contributor.share, 0)
+
+  return [
+    { key: 'title', value: workData.title },
+    { key: 'isrc', value: workData.isrc || 'Not specified' },
+    { key: 'work_id', value: workData.workId },
+    { key: 'contributors_count', value: workData.contributors.length.toString() },
+    { key: 'total_shares', value: totalShares.toString() },
+    { key: 'type', value: 'Intellectual Property' },
+    { key: 'category', value: 'Music' },
+    { key: 'description', value: workData.description || `Intellectual Property Work: ${workData.title}` },
+    // Store contributor data as JSON string (Solana attributes support strings)
+    {
+      key: 'contributors_data',
+      value: JSON.stringify(
+        workData.contributors.map((c) => ({
+          name: c.name,
+          wallet: c.wallet,
+          share: c.share,
+        })),
+      ),
+    },
+    // Store royalty distribution data
+    {
+      key: 'royalty_distribution',
+      value: JSON.stringify(
+        workData.contributors.map((c) => ({
+          recipient: c.wallet,
+          recipient_name: c.name,
+          share_percentage: c.share,
+        })),
+      ),
+    },
+  ]
 }
 
 /**
@@ -226,20 +277,51 @@ export async function createMetadataReference(workId: number, metadata: object):
 }
 
 /**
- * Mint NFT using Metaplex Core with server-side signature
+ * Enhanced: Store metadata in Supabase database for reliable off-chain storage
+ */
+export async function storeMetadataInDatabase(workId: string, metadata: object): Promise<void> {
+  try {
+    // Store the complete metadata JSON in the database
+    // This ensures we have the full metadata even if the API endpoint is unavailable
+    await WorkRepository.updateWork(workId, {
+      // Store full metadata as JSON string for backup
+      metadata_uri: JSON.stringify({
+        stored_at: new Date().toISOString(),
+        full_metadata: metadata,
+        api_endpoint: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/metadata/${workId}`,
+      }),
+    })
+
+    console.log('Metadata stored in database for work ID:', workId)
+  } catch (error) {
+    console.error('Failed to store metadata in database:', error)
+    throw error
+  }
+}
+
+/**
+ * Mint NFT using Metaplex Core with server-side signature and on-chain attributes
  */
 export async function mintWorkNFT(params: {
-  workId: number
+  workId: string // Change from number to string to match database
   ownerAddress: string
   metadata: {
     name: string
     uri: string
   }
+  contributors: Array<{
+    name: string
+    wallet: string
+    share: number
+  }>
+  isrc?: string
+  description?: string
 }): Promise<{
   success: boolean
   assetId: string
   signature: string
   metadata: object
+  onChainAttributes: Attribute[]
 }> {
   try {
     if (!SERVER_KEYPAIR) {
@@ -251,16 +333,34 @@ export async function mintWorkNFT(params: {
     // Generate asset keypair
     const asset = generateSigner(umi)
 
+    // Create on-chain attributes
+    const onChainAttributes = createOnChainAttributes({
+      title: params.metadata.name,
+      isrc: params.isrc,
+      contributors: params.contributors,
+      workId: params.workId,
+      description: params.description,
+    })
+
     console.log('Minting NFT with asset ID:', asset.publicKey)
     console.log('Owner address:', params.ownerAddress)
     console.log('Metadata:', params.metadata)
+    console.log('On-chain attributes:', onChainAttributes)
 
-    // Create the NFT using Metaplex Core
-    const createInstruction = create(umi, {
+    // Create the NFT using Metaplex Core with on-chain attributes
+    const createInstruction = createV1(umi, {
       asset,
       name: params.metadata.name,
       uri: params.metadata.uri,
       owner: toUmiPublicKey(params.ownerAddress),
+      plugins: [
+        pluginAuthorityPair({
+          type: 'Attributes',
+          data: {
+            attributeList: onChainAttributes,
+          },
+        }),
+      ],
     })
 
     // Send and confirm the transaction
@@ -268,7 +368,17 @@ export async function mintWorkNFT(params: {
       send: { commitment: 'confirmed' },
     })
 
-    console.log('NFT minted successfully!')
+    // Store metadata in database for backup/caching
+    await storeMetadataInDatabase(params.workId, {
+      nft_metadata: params.metadata,
+      on_chain_attributes: onChainAttributes,
+      contributors: params.contributors,
+      transaction_signature: result.signature.toString(),
+      asset_id: asset.publicKey,
+      created_at: new Date().toISOString(),
+    })
+
+    console.log('NFT minted successfully with on-chain attributes!')
     console.log('Asset ID:', asset.publicKey)
     console.log('Transaction signature:', result.signature)
 
@@ -277,6 +387,7 @@ export async function mintWorkNFT(params: {
       assetId: asset.publicKey,
       signature: result.signature.toString(),
       metadata: params.metadata,
+      onChainAttributes,
     }
   } catch (error) {
     console.error('Failed to mint NFT:', error)
@@ -285,7 +396,7 @@ export async function mintWorkNFT(params: {
 }
 
 /**
- * Fetch NFT asset data
+ * Fetch NFT asset data including on-chain attributes
  */
 export async function getAssetData(assetId: string): Promise<AssetV1 | null> {
   try {
@@ -294,6 +405,23 @@ export async function getAssetData(assetId: string): Promise<AssetV1 | null> {
     return asset
   } catch (error) {
     console.error('Failed to fetch asset:', error)
+    return null
+  }
+}
+
+/**
+ * Fetch on-chain attributes from an asset
+ */
+export async function getAssetAttributes(assetId: string): Promise<Attribute[] | null> {
+  try {
+    const asset = await getAssetData(assetId)
+    if (!asset) return null
+
+    // Find the attributes plugin
+    const attributesData = asset.attributes?.attributeList || []
+    return attributesData
+  } catch (error) {
+    console.error('Failed to fetch asset attributes:', error)
     return null
   }
 }
