@@ -14,7 +14,11 @@
     "format:check": "prettier --check .",
     "lint": "next lint",
     "setup": "npm run anchor keys sync && npm run codama:js",
-    "start": "next start"
+    "start": "next start",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "description": "Next.js, Tailwind, basic Anchor example, gill (based on @solana/kit), Wallet UI",
   "keywords": [
@@ -73,17 +77,24 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.10",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.3",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
     "eslint": "^9.29.0",
     "eslint-config-next": "15.3.3",
     "esrun": "^3.2.30",
-    "jest": "^30.0.0",
+    "jest": "^30.0.2",
+    "jest-environment-jsdom": "^30.0.2",
+    "jsdom": "^26.1.0",
     "prettier": "^3.5.3",
     "tailwindcss": "^4.1.10",
     "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
     "ws": "^8.18.2"
   }
 }
