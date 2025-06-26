@@ -20,7 +20,8 @@
       "Bash(ls:*)",
       "mcp__supabase__apply_migration",
       "Bash(rm:*)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "WebFetch(domain:cdn.dribbble.com)"
     ],
     "deny": []
   }
