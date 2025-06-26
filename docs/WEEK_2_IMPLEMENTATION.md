@@ -185,7 +185,7 @@ SERVER_WALLET_PRIVATE_KEY='[1,2,3,...]'  # Array format of private key
 
 # Privy Configuration
 NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id
-PRIVY_APP_SECRET=your_privy_app_secret
+NEXT_PRIVATE_PRIVY_APP_SECRET=your_privy_app_secret
 
 # Application Configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000

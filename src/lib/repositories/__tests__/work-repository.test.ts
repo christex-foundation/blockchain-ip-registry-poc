@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { WorkRepository } from '../work-repository'
+import { WorkBuilder, TestScenarios } from '@/test/builders'
 
 // Create a proper mock for the Supabase client
 const mockSupabaseClient = {
@@ -11,22 +12,18 @@ vi.mock('@/lib/supabase', () => ({
   createServerSupabaseClient: vi.fn(() => mockSupabaseClient),
 }))
 
-describe('WorkRepository', () => {
+describe('WorkRepository - Contract Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  describe('createWork', () => {
-    it('should create a work successfully', async () => {
-      const mockWorkData = {
-        title: 'Test Song',
-        isrc: 'TEST123456',
-        total_shares: 100,
-      }
-
+  describe('createWork - Contract Behavior', () => {
+    it('should create a work with valid data structure', async () => {
+      const workData = TestScenarios.validSingleArtist().buildForDatabase()
+      
       const mockCreatedWork = {
         id: 'work-123',
-        ...mockWorkData,
+        ...workData,
         created_at: '2024-01-01T00:00:00Z',
         updated_at: '2024-01-01T00:00:00Z',
         nft_mint_address: null,
@@ -46,19 +43,20 @@ describe('WorkRepository', () => {
 
       mockSupabaseClient.from.mockReturnValue(mockQuery)
 
-      const result = await WorkRepository.createWork(mockWorkData)
+      const result = await WorkRepository.createWork(workData)
 
       expect(mockSupabaseClient.from).toHaveBeenCalledWith('works')
-      expect(mockQuery.insert).toHaveBeenCalledWith(mockWorkData)
+      expect(mockQuery.insert).toHaveBeenCalledWith(workData)
       expect(result).toEqual(mockCreatedWork)
+      
+      // Verify contract expectations
+      expect(result.id).toBeTruthy()
+      expect(result.title).toBe(workData.title)
+      expect(result.created_at).toBeTruthy()
     })
 
-    it('should throw error when creation fails', async () => {
-      const mockWorkData = {
-        title: 'Test Song',
-        isrc: 'TEST123456',
-        total_shares: 100,
-      }
+    it('should handle creation failures gracefully', async () => {
+      const workData = TestScenarios.validDualArtist().buildForDatabase()
 
       const mockQuery = {
         insert: vi.fn().mockReturnValue({
@@ -73,17 +71,29 @@ describe('WorkRepository', () => {
 
       mockSupabaseClient.from.mockReturnValue(mockQuery)
 
-      await expect(WorkRepository.createWork(mockWorkData)).rejects.toThrow('Failed to create work: Database error')
+      await expect(WorkRepository.createWork(workData)).rejects.toThrow('Failed to create work: Database error')
+    })
+    
+    it('should maintain data integrity requirements', async () => {
+      const workData = WorkBuilder.create()
+        .withTitle('Data Integrity Test')
+        .withISRC('USRC17607834')
+        .buildForDatabase()
+      
+      // Verify work data meets basic requirements
+      expect(workData.title).toBeTruthy()
+      expect(workData.isrc).toMatch(/^[A-Z]{2}RC\d{8}$/)
+      expect(workData.total_shares).toBeGreaterThan(0)
     })
   })
 
-  describe('findByISRC', () => {
-    it('should find work by ISRC', async () => {
+  describe('findByISRC - Query Contract', () => {
+    it('should find work by valid ISRC format', async () => {
+      const workData = TestScenarios.validSingleArtist().build()
       const mockWork = {
         id: 'work-123',
-        title: 'Test Song',
-        isrc: 'TEST123456',
-        total_shares: 100,
+        ...workData,
+        created_at: '2024-01-01T00:00:00Z',
       }
 
       const mockQuery = {
@@ -99,12 +109,16 @@ describe('WorkRepository', () => {
 
       mockSupabaseClient.from.mockReturnValue(mockQuery)
 
-      const result = await WorkRepository.findByISRC('TEST123456')
+      const result = await WorkRepository.findByISRC(workData.isrc!)
 
       expect(mockSupabaseClient.from).toHaveBeenCalledWith('works')
       expect(mockQuery.select).toHaveBeenCalledWith('*')
-      expect(mockQuery.select().eq).toHaveBeenCalledWith('isrc', 'TEST123456')
+      expect(mockQuery.select().eq).toHaveBeenCalledWith('isrc', workData.isrc)
       expect(result).toEqual(mockWork)
+      
+      // Verify contract: found work should have valid structure
+      expect(result?.id).toBeTruthy()
+      expect(result?.isrc).toBe(workData.isrc)
     })
 
     it('should return null when work not found', async () => {
@@ -140,7 +154,7 @@ describe('WorkRepository', () => {
 
       mockSupabaseClient.from.mockReturnValue(mockQuery)
 
-      await expect(WorkRepository.findByISRC('TEST123456')).rejects.toThrow(
+      await expect(WorkRepository.findByISRC('USRC17607834')).rejects.toThrow(
         'Failed to find work by ISRC: Database connection failed',
       )
     })

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { validateISRC, validateRoyaltyShares, validateWalletAddress, calculateTotalShares } from '../utils'
+import { WorkBuilder, ContributorBuilder, TestScenarios, createShareDistribution } from '@/test/builders'
 
 // Mock the repositories for integration testing
 vi.mock('../supabase', () => ({
@@ -23,29 +24,8 @@ describe('Integration Tests - Full Workflows', () => {
 
   describe('Work Registration Complete Workflow', () => {
     it('should validate and process complete work registration', () => {
-      // Simulate a complete work registration workflow
-      const workData = {
-        title: 'Test Song',
-        isrc: 'USRC17607834',
-        description: 'A test song for integration testing',
-        contributors: [
-          {
-            name: 'Lead Artist',
-            walletAddress: 'DjVE6JNiYqPL2QXyCbqkKKXo8PiW3uYwVLwxjyeo8jqV',
-            royaltyShare: 45,
-          },
-          {
-            name: 'Producer',
-            walletAddress: 'BrG44HdsEhzapvs8bEqzvkq4egwevS3fRE6ze2ENo6S8',
-            royaltyShare: 35,
-          },
-          {
-            name: 'Songwriter',
-            walletAddress: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-            royaltyShare: 20,
-          },
-        ],
-      }
+      // Use test builder for flexible work creation
+      const workData = TestScenarios.complexWork().buildForAPI()
 
       // Step 1: Validate ISRC format
       const isrcValid = validateISRC(workData.isrc)
@@ -58,11 +38,14 @@ describe('Integration Tests - Full Workflows', () => {
       expect(walletValidations.every((valid) => valid)).toBe(true)
 
       // Step 3: Validate royalty share distribution
-      const sharesValid = validateRoyaltyShares(workData.contributors)
+      const contributorsForValidation = workData.contributors.map(c => ({
+        royaltyShare: c.share
+      }))
+      const sharesValid = validateRoyaltyShares(contributorsForValidation)
       expect(sharesValid).toBe(true)
 
       // Step 4: Calculate total shares (should be 100%)
-      const totalShares = calculateTotalShares(workData.contributors)
+      const totalShares = calculateTotalShares(contributorsForValidation)
       expect(totalShares).toBe(100)
 
       // Step 5: Simulate successful workflow completion
@@ -74,32 +57,26 @@ describe('Integration Tests - Full Workflows', () => {
       }
 
       expect(workflowResult.status).toBe('validated')
-      expect(workflowResult.contributors).toBe(3)
+      expect(workflowResult.contributors).toBe(4)
       expect(workflowResult.totalShares).toBe(100)
     })
 
     it('should reject invalid work registration workflow', () => {
-      const invalidWorkData = {
-        title: 'Invalid Work',
-        isrc: 'INVALID_ISRC', // Invalid ISRC
-        contributors: [
-          {
-            name: 'Artist',
-            walletAddress: 'invalid_wallet', // Invalid wallet
-            royaltyShare: 70,
-          },
-          {
-            name: 'Producer',
-            walletAddress: 'BrG44HdsEhzapvs8bEqzvkq4egwevS3fRE6ze2ENo6S8',
-            royaltyShare: 40, // Total 110% - invalid
-          },
-        ],
-      }
+      // Use builder to create consistently invalid data
+      const invalidWorkData = WorkBuilder.create()
+        .withTitle('Invalid Work')
+        .withISRC('INVALID_ISRC')
+        .withContributors(
+          ContributorBuilder.create().withName('Artist').withWalletAddress('invalid_wallet').withShare(70).build(),
+          ContributorBuilder.create().asProducer().withShare(40).build()
+        )
+        .buildForAPI()
 
       // Validation should fail at multiple steps
-      const isrcValid = validateISRC(invalidWorkData.isrc)
+      const isrcValid = validateISRC(invalidWorkData.isrc!)
       const firstWalletValid = validateWalletAddress(invalidWorkData.contributors[0].walletAddress)
-      const sharesValid = validateRoyaltyShares(invalidWorkData.contributors)
+      const contributorsForValidation = invalidWorkData.contributors.map(c => ({ royaltyShare: c.royaltyShare }))
+      const sharesValid = validateRoyaltyShares(contributorsForValidation)
 
       expect(isrcValid).toBe(false)
       expect(firstWalletValid).toBe(false)

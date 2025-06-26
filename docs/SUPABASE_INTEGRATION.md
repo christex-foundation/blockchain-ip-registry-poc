@@ -25,7 +25,7 @@ The platform uses the following database structure in the `ip-onchain` Supabase 
 - `isrc` (VARCHAR, Unique, Nullable) - International Standard Recording Code
 - `total_shares` (INTEGER, Default: 100) - Total percentage shares
 - `nft_mint_address` (VARCHAR, Nullable) - Solana NFT mint address
-- `metadata_uri` (VARCHAR, Nullable) - IPFS metadata URI
+- `metadata_uri` (TEXT, Nullable) - Metadata URI (can be IPFS or API endpoint)
 - `created_at` (TIMESTAMP)
 - `updated_at` (TIMESTAMP)
 
@@ -117,8 +117,11 @@ Updated all API routes to use Supabase:
 #### Connection Details
 
 - **Project URL**: `https://opfemzybpukvzeznvhph.supabase.co`
-- **Region**: `sa-east-1`
+- **Project ID**: `opfemzybpukvzeznvhph`
+- **Region**: `sa-east-1` (South America - Brazil)
+- **Database Version**: PostgreSQL 17.4.1.043
 - **Organization**: Christex Foundation
+- **Status**: Active & Healthy
 
 ## Data Flow
 
@@ -149,21 +152,40 @@ Updated all API routes to use Supabase:
 2. Data transformed to UI-friendly format
 3. Status determined based on NFT mint address presence
 
-## Sample Data
+## Current Database State
 
-Added sample data for testing:
+### Active Data in Production
 
-### Works
+#### Works (4 records)
 
-- "Sample Track #1" (ISRC: USRC12345678)
-- "Collaborative Beat" (ISRC: USRC87654321)
+1. **"My Work for Barry"** (ISRC: 34324nfns)
+   - NFT Mint Address: `HdFUYggmcPLy9hsRajgAALVk7AE4s4K26xhreAUMwXZc`
+   - Complex metadata URI with full NFT metadata and on-chain attributes
+   - Contributors: og (40%), fndn (60%)
 
-### Contributors
+2. **"this is my work"** (ISRC: jfsdfo2342)
+   - NFT Mint Address: `C7jhBFmdUXuyDr3ABSeA4jfYmCD5LAtpcXm5cPth9zWq`
+   - Contributors: ogo (38%), owo (62%)
 
-- Artist One (60% share)
-- Producer (40% share)
-- Artist Two (50% share)
-- Co-writer (50% share)
+3. **"Sample Track #1"** (ISRC: USRC12345678)
+   - No NFT mint address (test data)
+   - Contributors: Artist One (60%), Producer (40%)
+
+4. **"Collaborative Beat"** (ISRC: USRC87654321)
+   - No NFT mint address (test data)
+   - Contributors: Artist Two (50%), Co-writer (50%)
+
+#### Contributors (8 records)
+
+Active contributors with various royalty share percentages, demonstrating the flexible royalty distribution system.
+
+#### Users (1 record)
+
+One active user record with Privy integration.
+
+#### Royalty Distributions (0 records)
+
+No distributions executed yet, ready for testing.
 
 ## Integration Benefits
 

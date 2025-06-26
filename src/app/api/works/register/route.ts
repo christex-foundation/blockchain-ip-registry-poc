@@ -24,6 +24,9 @@ interface WorkRegistrationData {
   imageUrl?: string
 }
 
+// ISRC format validation regex
+const ISRC_REGEX = /^[A-Z]{2}[A-Z0-9]{3}[0-9]{7}$/
+
 export async function POST(request: NextRequest) {
   try {
     // Get access token from Authorization header
@@ -35,9 +38,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the token and get user info
-    const verifiedClaims = await verifyPrivyToken(accessToken)
-    if (!verifiedClaims) {
-      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 })
+    let verifiedClaims
+    try {
+      verifiedClaims = await verifyPrivyToken(accessToken)
+      if (!verifiedClaims) {
+        return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 })
+      }
+    } catch (authError) {
+      console.error('Authentication error:', authError)
+      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 })
     }
 
     // Get user's Solana wallet from Privy
@@ -67,6 +76,11 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!workData.title || !workData.contributors || !Array.isArray(workData.contributors)) {
       return NextResponse.json({ error: 'Title and contributors are required' }, { status: 400 })
+    }
+
+    // Validate ISRC format if provided
+    if (workData.isrc && !ISRC_REGEX.test(workData.isrc)) {
+      return NextResponse.json({ error: 'Invalid ISRC format' }, { status: 400 })
     }
 
     // Validate contributors

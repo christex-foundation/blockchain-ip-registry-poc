@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ContributorRepository } from '../contributor-repository'
+import { WorkBuilder, ContributorBuilder, TestScenarios } from '@/test/builders'
 
 // Create a proper mock for the Supabase client
 const mockSupabaseClient = {
@@ -11,27 +12,22 @@ vi.mock('@/lib/supabase', () => ({
   createServerSupabaseClient: vi.fn(() => mockSupabaseClient),
 }))
 
-describe('ContributorRepository', () => {
+describe('ContributorRepository - Contract Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  describe('createMultipleContributors', () => {
-    it('should create multiple contributors successfully', async () => {
-      const mockContributorsData = [
-        {
-          work_id: 'work-123',
-          name: 'Artist',
-          wallet_address: 'wallet123',
-          royalty_share: 60,
-        },
-        {
-          work_id: 'work-123',
-          name: 'Producer',
-          wallet_address: 'wallet456',
-          royalty_share: 40,
-        },
-      ]
+  describe('createMultipleContributors - Contract Behavior', () => {
+    it('should create contributors maintaining share integrity', async () => {
+      const workId = 'work-123'
+      const contributors = TestScenarios.validDualArtist().build().contributors
+      const mockContributorsData = contributors.map(c => 
+        ContributorBuilder.create()
+          .withName(c.name)
+          .withWalletAddress(c.wallet_address)
+          .withShare(c.royalty_share)
+          .buildForDatabase(workId)
+      )
 
       const mockCreatedContributors = mockContributorsData.map((data, index) => ({
         id: `contrib-${index + 1}`,
@@ -55,17 +51,19 @@ describe('ContributorRepository', () => {
       expect(mockSupabaseClient.from).toHaveBeenCalledWith('contributors')
       expect(mockQuery.insert).toHaveBeenCalledWith(mockContributorsData)
       expect(result).toEqual(mockCreatedContributors)
+      
+      // Verify contract: total shares should equal 100%
+      const totalShares = result.reduce((sum, c) => sum + c.royalty_share, 0)
+      expect(totalShares).toBe(100)
+      
+      // Verify all contributors belong to same work
+      expect(result.every(c => c.work_id === workId)).toBe(true)
     })
 
-    it('should throw error when creation fails', async () => {
-      const mockContributorsData = [
-        {
-          work_id: 'work-123',
-          name: 'Artist',
-          wallet_address: 'wallet123',
-          royalty_share: 60,
-        },
-      ]
+    it('should handle creation failures gracefully', async () => {
+      const workId = 'work-123'
+      const contributor = ContributorBuilder.create().asArtist().buildForDatabase(workId)
+      const mockContributorsData = [contributor]
 
       const mockQuery = {
         insert: vi.fn().mockReturnValue({
