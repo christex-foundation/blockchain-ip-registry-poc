@@ -1,69 +1,64 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { ArrowRight, Shield, Zap, Users, ChevronDown } from 'lucide-react'
+import Link from 'next/link'
 
 const navigationItems = [
-  { label: 'FOR ARTISTS', href: '#artists' },
-  { label: 'OUR STORY', href: '#story' },
-  { label: 'LEARN', href: '#learn' },
-]
-
-const socialLinks = [
-  { label: 'Instagram', href: '#', icon: '📷' },
-  { label: 'Twitter', href: '#', icon: '🐦' },
-  { label: 'LinkedIn', href: '#', icon: '💼' },
+  { label: 'Features', href: '#features' },
+  { label: 'How It Works', href: '#how-it-works' },
+  { label: 'About', href: '#about' },
 ]
 
 const features = [
   {
-    number: '1',
-    title: 'FREEDOM',
-    description: 'Freedom to raise funds anytime you need from the music you own.',
+    icon: Shield,
+    title: 'Secure Ownership',
+    description: 'Blockchain-verified intellectual property rights with immutable proof of creation and ownership.',
   },
   {
-    number: '2',
-    title: 'COMMUNITY',
-    description: 'An engaged community of fans that are closer to you than ever before.',
+    icon: Zap,
+    title: 'Instant Royalties',
+    description: 'Automated royalty distribution to all contributors based on predefined ownership shares.',
   },
   {
-    number: '3',
-    title: 'CONTROL',
-    description: 'Let fans get involved in your songs&apos; governance without losing control. Veto any decision they take.',
+    icon: Users,
+    title: 'Collaborative Control',
+    description: 'Transparent contributor management with clear ownership stakes and automated payments.',
   },
 ]
 
-const howItWorks = [
+const steps = [
   {
-    number: '1',
-    title: 'REGISTER',
-    description: 'Register your creative works and establish ownership on the blockchain.',
+    number: '01',
+    title: 'Register Your Work',
+    description: 'Upload your intellectual property and establish verifiable ownership on the blockchain.',
   },
   {
-    number: '2',
-    title: 'MINT',
-    description: 'Mint NFTs that represent ownership shares in your intellectual property.',
+    number: '02',
+    title: 'Define Contributors',
+    description: 'Set ownership percentages for all contributors, collaborators, and stakeholders.',
   },
   {
-    number: '3',
-    title: 'DISTRIBUTE',
-    description: 'Automate royalty distributions to contributors and stakeholders.',
+    number: '03',
+    title: 'Earn & Distribute',
+    description: 'Automatically receive and distribute royalties to all parties based on their ownership share.',
   },
 ]
 
 export function LandingPage() {
-
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 glass">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <nav className="sticky top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
+        <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <div className="w-4 h-4 bg-white rounded-sm"></div>
               </div>
-              <span className="text-xl font-bold">IP ONCHAIN</span>
+              <span className="text-xl font-semibold">IP OnChain</span>
             </div>
 
             {/* Navigation Items */}
@@ -72,210 +67,167 @@ export function LandingPage() {
                 <a
                   key={item.label}
                   href={item.href}
-                  className="text-sm font-medium hover:text-purple-400 transition-colors"
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {item.label}
                 </a>
               ))}
             </div>
 
-            {/* Social Links & CTA */}
-            <div className="flex items-center space-x-4">
-              <div className="hidden md:flex items-center space-x-3">
-                {socialLinks.map((social) => (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    className="text-lg hover:text-purple-400 transition-colors"
-                  >
-                    {social.icon}
-                  </a>
-                ))}
-              </div>
-              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-2 rounded-full font-medium glow">
-                Join
+            {/* CTA */}
+            <Link href="/auth/login">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                Get Started
               </Button>
-            </div>
+            </Link>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-6">
-                <h1 className="text-6xl lg:text-7xl font-bold leading-tight">
-                  INTELLECTUAL
-                  <br />
-                  <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    PROPERTY
-                  </span>
-                  <br />
-                  ON-CHAIN
-                </h1>
-                <p className="text-xl text-muted-foreground max-w-lg">
-                  The blockchain platform for those who create and own intellectual property.
-                </p>
-              </div>
-              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 rounded-full text-lg font-medium glow">
-                Early Access
+      <section className="pt-24 pb-32 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center space-y-12">
+            <div className="space-y-6">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-balance">
+                Protect and Monetize Your
+                <br />
+                <span className="text-primary">Intellectual Property</span>
+                <br />
+                On-Chain
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-balance">
+                The modern platform for creators to register, protect, and automatically distribute royalties 
+                for their intellectual property using blockchain technology.
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/auth/login">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg">
+                  Start Protecting Your IP
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
+                Learn More
+                <ChevronDown className="ml-2 h-5 w-5" />
               </Button>
             </div>
 
-            {/* 3D Illustration Placeholder */}
-            <div className="relative">
-              <div className="glass rounded-3xl p-8 float">
-                <div className="aspect-square bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl mx-auto flex items-center justify-center">
-                      <div className="w-8 h-8 bg-white rounded-lg"></div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="text-2xl font-bold">$420.69</div>
-                      <div className="text-sm text-muted-foreground">Portfolio Value</div>
-                    </div>
-                  </div>
-                </div>
+            {/* Stats */}
+            <div className="pt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary">10K+</div>
+                <div className="text-muted-foreground">Works Protected</div>
               </div>
-              {/* Floating elements */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-purple-500 rounded-full sparkle"></div>
-              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-pink-500 rounded-full sparkle"></div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary">$2M+</div>
+                <div className="text-muted-foreground">Royalties Distributed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary">500+</div>
+                <div className="text-muted-foreground">Active Creators</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              <h2 className="text-4xl font-bold">
-                WHAT YOU'LL UNLOCK WITH{' '}
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  IP ONCHAIN
-                </span>
-              </h2>
-              <div className="space-y-8">
-                {features.map((feature) => (
-                  <div key={feature.number} className="flex space-x-6">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
-                        {feature.number}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <h3 className="text-2xl font-bold">{feature.title}</h3>
-                      <p className="text-muted-foreground">{feature.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+      <section id="features" className="py-24 px-6 bg-muted/30">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold">
+              Why Choose IP OnChain
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Built for modern creators who demand transparency, security, and fair compensation.
+            </p>
+          </div>
 
-            {/* Illustration */}
-            <div className="relative">
-              <div className="glass rounded-3xl p-8 float">
-                <div className="aspect-square bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl flex items-center justify-center">
-                  <div className="text-center space-y-6">
-                    <div className="relative">
-                      <div className="w-32 h-32 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-3xl mx-auto"></div>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl"></div>
-                      </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {features.map((feature, index) => {
+              const Icon = feature.icon
+              return (
+                <div key={index} className="bg-card p-8 rounded-xl shadow-soft border border-border">
+                  <div className="space-y-4">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <Icon className="h-6 w-6 text-primary" />
                     </div>
-                    <div className="space-y-2">
-                      <div className="text-lg font-semibold">Creative Freedom</div>
-                      <div className="text-sm text-muted-foreground">Unlock new possibilities</div>
-                    </div>
+                    <h3 className="text-xl font-semibold">{feature.title}</h3>
+                    <p className="text-muted-foreground">{feature.description}</p>
                   </div>
                 </div>
-              </div>
-            </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Illustration */}
-            <div className="relative order-2 lg:order-1">
-              <div className="glass rounded-3xl p-8 float">
-                <div className="aspect-square bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl flex items-center justify-center">
-                  <div className="text-center space-y-6">
-                    <div className="relative">
-                      <div className="w-24 h-24 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full mx-auto flex items-center justify-center">
-                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"></div>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="text-lg font-semibold">Automated Process</div>
-                      <div className="text-sm text-muted-foreground">Seamless workflow</div>
-                    </div>
+      <section id="how-it-works" className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold">
+              How It Works
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Simple, transparent process to protect and monetize your intellectual property.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {steps.map((step, index) => (
+              <div key={index} className="relative">
+                <div className="space-y-6">
+                  <div className="text-6xl font-bold text-primary/20">{step.number}</div>
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-semibold">{step.title}</h3>
+                    <p className="text-muted-foreground">{step.description}</p>
                   </div>
                 </div>
+                {index < steps.length - 1 && (
+                  <div className="hidden md:block absolute top-8 left-full w-full h-0.5 bg-border"></div>
+                )}
               </div>
-            </div>
-
-            <div className="space-y-8 order-1 lg:order-2">
-              <h2 className="text-4xl font-bold">
-                HOW IT{' '}
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  WORKS
-                </span>
-              </h2>
-              <div className="space-y-8">
-                {howItWorks.map((step) => (
-                  <div key={step.number} className="flex space-x-6">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
-                        {step.number}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <h3 className="text-2xl font-bold">{step.title}</h3>
-                      <p className="text-muted-foreground">{step.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6">
+      <section id="about" className="py-24 px-6 bg-primary/5">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <h2 className="text-5xl font-bold">
-            Ready to{' '}
-            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Transform
-            </span>{' '}
-            Your IP?
+          <h2 className="text-4xl md:text-5xl font-bold">
+            Ready to Get Started?
           </h2>
           <p className="text-xl text-muted-foreground">
-            Join the future of intellectual property management on the blockchain.
+            Join thousands of creators who trust IP OnChain to protect and monetize their intellectual property.
           </p>
-          <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-12 py-4 rounded-full text-lg font-medium glow">
-            Get Started Today
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/auth/login">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg">
+                Start Protecting Your IP
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
+              Schedule a Demo
+            </Button>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 border-t border-border/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+      <footer className="py-12 px-6 border-t border-border">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <div className="w-4 h-4 bg-white rounded-sm"></div>
               </div>
-              <span className="text-lg font-bold">IP ONCHAIN</span>
+              <span className="text-lg font-semibold">IP OnChain</span>
             </div>
             <div className="text-sm text-muted-foreground">
               © 2024 IP OnChain. All rights reserved.
