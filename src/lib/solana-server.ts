@@ -9,6 +9,3 @@
 
 // Re-export everything from the new organized API
 export * from './onchain'
-
-// Legacy imports for any remaining internal dependencies
-import { WorkRepository } from './repositories/work-repository'
