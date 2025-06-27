@@ -234,7 +234,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
                   {error || 'The organization you are looking for does not exist or you do not have access to it.'}
                 </p>
               </div>
-              <Button asChild variant="outline" className="shadow-soft">
+              <Button asChild variant="outline" className="bg-white shadow-soft border-gray-200 text-[#202020] hover:bg-gray-50 hover:border-gray-300 transition-all duration-200">
                 <Link href="/organizations">Back to Organizations</Link>
               </Button>
             </div>
@@ -250,25 +250,25 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2 space-y-3">
           <div className="flex items-center gap-4">
-            <Button asChild variant="outline" size="sm" className="shadow-soft">
+            <Button asChild variant="outline" size="sm" className="bg-white shadow-soft border-gray-200 text-[#202020] hover:bg-gray-50 hover:border-gray-300 transition-all duration-200">
               <Link href="/organizations">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Link>
             </Button>
           </div>
-          <h1 className="text-4xl font-bold text-balance flex items-center gap-3">
-            <Building2 className="h-10 w-10 text-primary" />
+          <h1 className="text-4xl font-bold text-balance flex items-center gap-3 text-[#202020] font-['Space_Grotesk']">
+            <Building2 className="h-10 w-10 text-[#7073d1]" />
             {organization.name}
           </h1>
-          <p className="content-secondary text-balance">
+          <p className="text-gray-600 text-balance">
             Comprehensive organization management with on-chain member verification and collaborative IP workflows
           </p>
         </div>
         <div className="lg:justify-self-end">
           <Button 
             onClick={() => setShowAddMemberDialog(true)}
-            className="h-12 px-6 shadow-medium hover:shadow-strong transition-all duration-200"
+            className="h-12 px-6 bg-[#7073d1] hover:bg-[#5c5fb3] text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:-translate-y-0.5 border-0"
           >
             <UserPlus className="mr-2 h-5 w-5" />
             Add Member
@@ -278,28 +278,28 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
 
       {/* Statistics Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="shadow-soft border-0 bg-gradient-to-br from-primary/5 to-primary/10">
+        <Card className="shadow-soft border border-gray-200 bg-gradient-to-br from-[#7073d1]/5 to-[#7073d1]/10">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Users className="h-6 w-6 text-primary" />
+              <div className="h-12 w-12 bg-[#7073d1]/10 rounded-lg flex items-center justify-center">
+                <Users className="h-6 w-6 text-[#7073d1]" />
               </div>
               <div>
-                <p className="content-tertiary">Total Members</p>
-                <p className="text-2xl font-bold">{onChainMembers.length}</p>
+                <p className="text-sm text-gray-600">Total Members</p>
+                <p className="text-2xl font-bold text-[#202020] font-['Space_Grotesk']">{onChainMembers.length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="shadow-soft border-0 bg-gradient-to-br from-accent/30 to-accent/40">
+        <Card className="shadow-soft border border-gray-200 bg-gradient-to-br from-[#dcddff]/30 to-[#dcddff]/40">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 bg-accent/40 rounded-lg flex items-center justify-center">
-                <Activity className="h-6 w-6 text-secondary" />
+              <div className="h-12 w-12 bg-[#dcddff]/60 rounded-lg flex items-center justify-center">
+                <Activity className="h-6 w-6 text-[#7073d1]" />
               </div>
               <div>
-                <p className="content-tertiary">Collection Status</p>
+                <p className="text-sm text-gray-600">Collection Status</p>
                 <p className="text-lg font-semibold">
                   {organization.collection_address ? 'Active' : 'Setup'}
                 </p>
@@ -308,15 +308,15 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
           </CardContent>
         </Card>
         
-        <Card className="shadow-soft border-0 bg-gradient-to-br from-secondary/5 to-secondary/10">
+        <Card className="shadow-soft border border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 bg-secondary/10 rounded-lg flex items-center justify-center">
-                <Crown className="h-6 w-6 text-secondary" />
+              <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                <Crown className="h-6 w-6 text-gray-600" />
               </div>
               <div>
-                <p className="content-tertiary">Owners</p>
-                <p className="text-2xl font-bold">
+                <p className="text-sm text-gray-600">Owners</p>
+                <p className="text-2xl font-bold text-[#202020] font-['Space_Grotesk']">
                   {onChainMembers.filter(m => m.role === 'owner').length}
                 </p>
               </div>
@@ -324,14 +324,14 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
           </CardContent>
         </Card>
         
-        <Card className="shadow-soft border-0 bg-gradient-to-br from-green-50 to-green-100">
+        <Card className="shadow-soft border border-gray-200 bg-gradient-to-br from-green-50 to-green-100">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <Calendar className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="content-tertiary">Created</p>
+                <p className="text-sm text-gray-600">Created</p>
                 <p className="text-sm font-semibold">
                   {new Date(organization.created_at || '').toLocaleDateString()}
                 </p>
@@ -345,7 +345,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Organization Details */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="shadow-soft border-0">
+          <Card className="shadow-soft border border-gray-200 bg-white">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2">
                 <Hash className="h-5 w-5" />
@@ -385,7 +385,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
                       asChild
                       variant="outline"
                       size="sm"
-                      className="shadow-soft"
+                      className="bg-white shadow-soft border-gray-200 text-[#202020] hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
                     >
                       <Link
                         href={`https://core.metaplex.com/explorer/collection/${organization.collection_address}?env=devnet`}
@@ -432,7 +432,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
         </div>
 
         {/* Members Panel */}
-        <Card className="shadow-soft border-0">
+        <Card className="shadow-soft border border-gray-200 bg-white">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />

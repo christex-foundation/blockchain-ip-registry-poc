@@ -115,7 +115,7 @@ export function AddMemberDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] shadow-strong border-0">
+      <DialogContent className="sm:max-w-[480px] shadow-strong border border-gray-200 bg-white">
         <DialogHeader className="space-y-3 pb-6">
           <DialogTitle className="flex items-center gap-3 text-2xl">
             <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -140,7 +140,7 @@ export function AddMemberDialog({
                     <FormControl>
                       <Input
                         placeholder="did:privy:clk..."
-                        className="h-12 shadow-soft border-0 bg-muted/30 font-mono text-sm"
+                        className="h-12 shadow-soft border border-gray-200 bg-white text-[#202020] font-mono text-sm focus:border-[#7073d1] focus:ring-[#7073d1]/20"
                         {...field}
                         disabled={isSubmitting}
                       />
@@ -165,11 +165,11 @@ export function AddMemberDialog({
                       disabled={isSubmitting}
                     >
                       <FormControl>
-                        <SelectTrigger className="h-12 shadow-soft border-0 bg-muted/30">
+                        <SelectTrigger className="h-12 shadow-soft border border-gray-200 bg-white text-[#202020] focus:border-[#7073d1] focus:ring-[#7073d1]/20">
                           <SelectValue placeholder="Select member role" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="bg-white border border-gray-200 shadow-medium">
                         <SelectItem value="member">
                           <div className="flex items-center gap-3 py-2">
                             <div className="h-8 w-8 bg-muted rounded-full flex items-center justify-center">
@@ -235,14 +235,14 @@ export function AddMemberDialog({
                   variant="outline"
                   onClick={() => onOpenChange(false)}
                   disabled={isSubmitting}
-                  className="shadow-soft"
+                  className="bg-white shadow-soft border-gray-200 text-[#202020] hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="shadow-medium hover:shadow-strong transition-all duration-200"
+                  className="bg-[#7073d1] hover:bg-[#5c5fb3] text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:-translate-y-0.5 border-0"
                 >
                   {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
                   Add Member
