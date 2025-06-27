@@ -260,7 +260,7 @@ function RegisterWorkContent() {
                         id="title"
                         {...register('title')}
                         placeholder="Enter the title of your work"
-                        className={`h-12 border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20 ${
+                        className={`h-12 bg-white text-[#202020] border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20 ${
                           errors.title ? 'border-red-400 focus:border-red-400 focus:ring-red-100' : ''
                         }`}
                       />
@@ -279,7 +279,7 @@ function RegisterWorkContent() {
                         id="isrc"
                         {...register('isrc')}
                         placeholder="e.g. USRC17607839"
-                        className="h-12 border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20"
+                        className="h-12 bg-white text-[#202020] border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20"
                       />
                       <p className="text-xs text-gray-500 mt-1">International Standard Recording Code (optional)</p>
                     </div>
@@ -293,7 +293,7 @@ function RegisterWorkContent() {
                         {...register('imageUrl')}
                         placeholder="https://example.com/image.jpg"
                         type="url"
-                        className={`h-12 border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20 ${
+                        className={`h-12 bg-white text-[#202020] border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20 ${
                           errors.imageUrl ? 'border-red-400 focus:border-red-400 focus:ring-red-100' : ''
                         }`}
                       />
@@ -311,7 +311,7 @@ function RegisterWorkContent() {
                         {...register('description')}
                         placeholder="Describe your work, its genre, inspiration, or any relevant details..."
                         rows={4}
-                        className="border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20"
+                        className="bg-white text-[#202020] border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20"
                       />
                       <p className="text-xs text-gray-500 mt-1">Optional but recommended for better work identification</p>
                     </div>
@@ -334,7 +334,7 @@ function RegisterWorkContent() {
                         variant="outline"
                         size="sm"
                         onClick={addContributor}
-                        className="flex items-center gap-2 border-[#7073d1] text-[#7073d1] hover:bg-[#7073d1] hover:text-white transition-colors"
+                        className="flex items-center gap-2 bg-white border-[#7073d1] text-[#7073d1] hover:bg-[#7073d1] hover:text-white transition-colors shadow-soft hover:shadow-medium"
                       >
                         <Plus className="h-4 w-4" />
                         Add Contributor
@@ -343,7 +343,7 @@ function RegisterWorkContent() {
 
                     <div className="space-y-4">
                       {fields.map((field, index) => (
-                        <Card key={field.id} className="border border-gray-200 shadow-soft">
+                        <Card key={field.id} className="border border-gray-200 shadow-soft bg-white hover:shadow-medium transition-all duration-200">
                           <CardContent className="p-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                               <div>
@@ -353,7 +353,7 @@ function RegisterWorkContent() {
                                 <Input
                                   {...register(`contributors.${index}.name`)}
                                   placeholder="Full name"
-                                  className={`h-11 border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20 ${
+                                  className={`h-11 bg-white text-[#202020] border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20 ${
                                     errors.contributors?.[index]?.name ? 'border-red-400' : ''
                                   }`}
                                 />
@@ -371,7 +371,7 @@ function RegisterWorkContent() {
                                 <Input
                                   {...register(`contributors.${index}.walletAddress`)}
                                   placeholder="Solana wallet address"
-                                  className={`h-11 border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20 font-mono text-sm ${
+                                  className={`h-11 bg-white text-[#202020] border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20 font-mono text-sm ${
                                     errors.contributors?.[index]?.walletAddress ? 'border-red-400' : ''
                                   }`}
                                 />
@@ -394,7 +394,7 @@ function RegisterWorkContent() {
                                     min="0"
                                     max="100"
                                     placeholder="0.0"
-                                    className={`h-11 border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20 ${
+                                    className={`h-11 bg-white text-[#202020] border-gray-200 focus:border-[#7073d1] focus:ring-[#7073d1]/20 ${
                                       errors.contributors?.[index]?.share ? 'border-red-400' : ''
                                     }`}
                                   />
@@ -411,7 +411,7 @@ function RegisterWorkContent() {
                                       variant="outline"
                                       size="sm"
                                       onClick={() => removeContributor(index)}
-                                      className="h-11 px-3 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+                                      className="h-11 px-3 bg-white border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 shadow-soft hover:shadow-medium transition-all duration-200"
                                     >
                                       <Minus className="h-4 w-4" />
                                     </Button>
@@ -424,7 +424,7 @@ function RegisterWorkContent() {
                       ))}
 
                       {/* Total Shares Display */}
-                      <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-200">
+                      <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-200 shadow-soft">
                         <span className="font-semibold text-[#202020]">Total Ownership:</span>
                         <span className={`font-bold text-lg ${
                           Math.abs(totalShares - 100) < 0.01 
@@ -445,7 +445,7 @@ function RegisterWorkContent() {
 
                   <Button 
                     type="submit" 
-                    className="w-full h-14 bg-gradient-to-r from-[#7073d1] to-[#5a5db8] hover:from-[#5a5db8] hover:to-[#4a4d9e] text-white font-semibold text-lg shadow-medium hover:shadow-strong transition-all duration-200" 
+                    className="w-full h-14 bg-gradient-to-r from-[#7073d1] to-[#5a5db8] hover:from-[#5a5db8] hover:to-[#4a4d9e] text-white font-semibold text-lg shadow-medium hover:shadow-strong transition-all duration-200 hover:-translate-y-0.5 border-0" 
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
