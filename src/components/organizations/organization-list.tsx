@@ -98,8 +98,8 @@ export function OrganizationList() {
       <div className="space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           <div className="lg:col-span-2 space-y-2">
-            <h1 className="text-4xl font-bold text-balance">Organizations</h1>
-            <p className="content-secondary text-balance">
+            <h1 className="text-4xl font-bold text-balance text-[#202020] font-['Space_Grotesk']">Organizations</h1>
+            <p className="text-gray-600 text-balance">
               Manage your organizations and their on-chain collections
             </p>
           </div>
@@ -114,17 +114,17 @@ export function OrganizationList() {
           </div>
         </div>
         
-        <Card className="shadow-soft border-0">
+        <Card className="shadow-soft border border-gray-200 bg-white">
           <CardContent className="pt-8 pb-8">
             <div className="text-center space-y-4">
               <div className="h-16 w-16 mx-auto bg-destructive/10 rounded-full flex items-center justify-center">
                 <Building2 className="h-8 w-8 text-destructive" />
               </div>
               <div className="space-y-2">
-                <h3 className="content-primary">Unable to load organizations</h3>
-                <p className="content-secondary">Error: {error}</p>
+                <h3 className="text-[#202020] font-semibold">Unable to load organizations</h3>
+                <p className="text-gray-600">Error: {error}</p>
               </div>
-              <Button variant="outline" onClick={fetchOrganizations} className="shadow-soft">
+              <Button variant="outline" onClick={fetchOrganizations} className="bg-white border-gray-200 hover:border-[#7073d1] hover:bg-[#dcddff]/30 text-[#202020] hover:text-[#7073d1] shadow-soft hover:shadow-medium transition-all duration-200">
                 Try Again
               </Button>
             </div>
@@ -139,15 +139,15 @@ export function OrganizationList() {
       {/* Header Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2 space-y-2">
-          <h1 className="text-4xl font-bold text-balance">Organizations</h1>
-          <p className="content-secondary text-balance">
+          <h1 className="text-4xl font-bold text-balance text-[#202020] font-['Space_Grotesk']">Organizations</h1>
+          <p className="text-gray-600 text-balance">
             Manage your organizations and their on-chain collections for collaborative intellectual property works
           </p>
         </div>
         <div className="lg:justify-self-end">
           <Button 
             onClick={() => setShowCreateDialog(true)}
-            className="h-12 px-6 shadow-medium hover:shadow-strong transition-all duration-200"
+            className="h-12 px-6 bg-[#7073d1] hover:bg-[#5c5fb3] text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:-translate-y-0.5 border-0"
           >
             <Plus className="mr-2 h-5 w-5" />
             Create Organization
@@ -158,29 +158,29 @@ export function OrganizationList() {
       {/* Statistics Overview */}
       {organizations.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="shadow-soft border-0 bg-gradient-to-br from-primary/5 to-primary/10">
+          <Card className="shadow-soft border border-gray-200 bg-gradient-to-br from-[#7073d1]/5 to-[#7073d1]/10">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <p className="content-tertiary">Total Organizations</p>
-                  <p className="text-2xl font-bold">{organizations.length}</p>
+                  <p className="text-sm text-gray-600">Total Organizations</p>
+                  <p className="text-2xl font-bold text-[#202020] font-['Space_Grotesk']">{organizations.length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="shadow-soft border-0 bg-gradient-to-br from-accent/30 to-accent/40">
+          <Card className="shadow-soft border border-gray-200 bg-gradient-to-br from-[#dcddff]/30 to-[#dcddff]/40">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 bg-accent/40 rounded-lg flex items-center justify-center">
                   <TrendingUp className="h-6 w-6 text-secondary" />
                 </div>
                 <div>
-                  <p className="content-tertiary">Active Collections</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-sm text-gray-600">Active Collections</p>
+                  <p className="text-2xl font-bold text-[#202020] font-['Space_Grotesk']">
                     {organizations.filter(org => org.collection_address).length}
                   </p>
                 </div>
@@ -188,15 +188,15 @@ export function OrganizationList() {
             </CardContent>
           </Card>
           
-          <Card className="shadow-soft border-0 bg-gradient-to-br from-secondary/5 to-secondary/10">
+          <Card className="shadow-soft border border-gray-200 bg-gradient-to-br from-[#202020]/5 to-[#202020]/10">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 bg-secondary/10 rounded-lg flex items-center justify-center">
                   <Building2 className="h-6 w-6 text-secondary" />
                 </div>
                 <div>
-                  <p className="content-tertiary">In Setup</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-sm text-gray-600">In Setup</p>
+                  <p className="text-2xl font-bold text-[#202020] font-['Space_Grotesk']">
                     {organizations.filter(org => !org.collection_address).length}
                   </p>
                 </div>
@@ -208,21 +208,21 @@ export function OrganizationList() {
 
       {/* Organizations Grid */}
       {organizations.length === 0 ? (
-        <Card className="shadow-soft border-0">
+        <Card className="shadow-soft border border-gray-200 bg-white">
           <CardContent className="pt-12 pb-12">
             <div className="text-center space-y-6 max-w-md mx-auto">
               <div className="h-20 w-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
                 <Building2 className="h-10 w-10 text-primary" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-semibold">No organizations yet</h3>
-                <p className="content-secondary text-balance">
+                <h3 className="text-xl font-semibold text-[#202020] font-['Space_Grotesk']">No organizations yet</h3>
+                <p className="text-gray-600 text-balance">
                   Create your first organization to start managing intellectual property works as a collaborative group with on-chain verification.
                 </p>
               </div>
               <Button 
                 onClick={() => setShowCreateDialog(true)}
-                className="shadow-medium hover:shadow-strong transition-all duration-200"
+                className="bg-[#7073d1] hover:bg-[#5c5fb3] text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:-translate-y-0.5 border-0"
               >
                 <Plus className="mr-2 h-5 w-5" />
                 Create Your First Organization
@@ -235,7 +235,7 @@ export function OrganizationList() {
           {organizations.map((org) => (
             <Card 
               key={org.id} 
-              className="group shadow-soft hover:shadow-medium transition-all duration-200 border-0 hover:scale-[1.02]"
+              className="group shadow-soft hover:shadow-medium transition-all duration-200 border border-gray-200 bg-white hover:scale-[1.02]"
             >
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
@@ -278,7 +278,7 @@ export function OrganizationList() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2 pt-2">
-                  <Button asChild size="sm" className="flex-1 shadow-soft">
+                  <Button asChild size="sm" className="flex-1 bg-[#7073d1] hover:bg-[#5c5fb3] text-white shadow-soft hover:shadow-medium transition-all duration-200 border-0">
                     <Link href={`/organizations/${org.id}`}>
                       <Users className="mr-2 h-4 w-4" />
                       Manage
@@ -289,7 +289,7 @@ export function OrganizationList() {
                       asChild
                       variant="outline"
                       size="sm"
-                      className="shadow-soft"
+                      className="bg-white border-gray-200 hover:border-[#7073d1] hover:bg-[#dcddff]/30 text-[#202020] hover:text-[#7073d1] shadow-soft hover:shadow-medium transition-all duration-200"
                     >
                       <Link
                         href={`https://core.metaplex.com/explorer/collection/${org.collection_address}?env=devnet`}
