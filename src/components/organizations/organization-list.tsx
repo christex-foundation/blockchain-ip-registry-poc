@@ -211,8 +211,8 @@ export function OrganizationList() {
         <Card className="shadow-soft border border-gray-200 bg-white">
           <CardContent className="pt-12 pb-12">
             <div className="text-center space-y-6 max-w-md mx-auto">
-              <div className="h-20 w-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                <Building2 className="h-10 w-10 text-primary" />
+              <div className="h-20 w-20 mx-auto bg-[#7073d1]/10 rounded-full flex items-center justify-center">
+                <Building2 className="h-10 w-10 text-[#7073d1]" />
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-semibold text-[#202020] font-['Space_Grotesk']">No organizations yet</h3>

@@ -123,7 +123,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
       case 'owner':
         return <Crown className="h-4 w-4 text-yellow-500" />
       case 'admin':
-        return <Shield className="h-4 w-4 text-primary" />
+        return <Shield className="h-4 w-4 text-[#7073d1]" />
       default:
         return <User className="h-4 w-4 text-gray-500" />
     }
@@ -332,7 +332,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
               </div>
               <div>
                 <p className="text-sm text-gray-600">Created</p>
-                <p className="text-sm font-semibold">
+                <p className="text-sm font-semibold text-[#202020]">
                   {new Date(organization.created_at || '').toLocaleDateString()}
                 </p>
               </div>
@@ -359,12 +359,12 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
               {/* Collection Status */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-primary" />
+                  <CheckCircle className="h-5 w-5 text-[#7073d1]" />
                   <span className="font-medium">Collection Status</span>
                 </div>
                 
                 {organization.collection_address ? (
-                  <div className="space-y-4 p-4 bg-primary/5 rounded-lg border border-primary/10">
+                  <div className="space-y-4 p-4 bg-[#7073d1]/5 rounded-lg border border-[#7073d1]/10">
                     <div className="flex items-center gap-2">
                       <Badge variant="default" className="flex items-center gap-1 shadow-soft">
                         <ExternalLink className="h-3 w-3" />
@@ -373,9 +373,9 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
                     </div>
                     
                     <div className="space-y-2">
-                      <p className="content-tertiary">Collection Address</p>
-                      <div className="p-3 bg-background/80 rounded-lg border">
-                        <p className="text-sm font-mono text-primary break-all">
+                      <p className="text-gray-600 text-sm">Collection Address</p>
+                      <div className="p-3 bg-white rounded-lg border border-gray-200">
+                        <p className="text-sm font-mono text-[#7073d1] break-all">
                           {organization.collection_address}
                         </p>
                       </div>
@@ -398,14 +398,14 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
                     </Button>
                   </div>
                 ) : (
-                  <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="p-4 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="secondary" className="shadow-soft">
                         <Clock className="h-3 w-3 mr-1" />
                         Setting up collection...
                       </Badge>
                     </div>
-                    <p className="content-secondary text-sm">
+                    <p className="text-gray-600 text-sm">
                       Your on-chain collection is being initialized. This process may take a few minutes.
                     </p>
                   </div>
@@ -414,11 +414,11 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
 
               {/* Creation Info */}
               <Separator />
-              <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <Calendar className="h-5 w-5 text-gray-500" />
                 <div>
-                  <p className="content-tertiary">Organization Created</p>
-                  <p className="font-medium">
+                  <p className="text-gray-600">Organization Created</p>
+                  <p className="font-medium text-[#202020]">
                     {new Date(organization.created_at || '').toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
@@ -445,12 +445,12 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
           <CardContent>
             {onChainMembers.length === 0 ? (
               <div className="text-center py-8 space-y-4">
-                <div className="h-16 w-16 mx-auto bg-muted/50 rounded-full flex items-center justify-center">
-                  <Users className="h-8 w-8 text-muted-foreground" />
+                <div className="h-16 w-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+                  <Users className="h-8 w-8 text-gray-500" />
                 </div>
                 <div className="space-y-2">
-                  <h4 className="font-medium">No members yet</h4>
-                  <p className="content-secondary text-sm text-balance">
+                  <h4 className="font-medium text-[#202020]">No members yet</h4>
+                  <p className="text-gray-600 text-sm text-balance">
                     Add members to start collaborating on intellectual property works.
                   </p>
                 </div>
@@ -460,18 +460,18 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
                 {onChainMembers.map((member) => (
                   <div
                     key={member.userId}
-                    className="group p-4 border rounded-lg hover:shadow-soft transition-all duration-200 hover:border-primary/20"
+                    className="group p-4 border rounded-lg hover:shadow-soft transition-all duration-200 hover:border-[#7073d1]/20"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 bg-gradient-to-br from-primary/10 to-accent/20 rounded-full flex items-center justify-center">
+                        <div className="h-10 w-10 bg-gradient-to-br from-[#7073d1]/10 to-[#dcddff]/20 rounded-full flex items-center justify-center">
                           {getRoleIcon(member.role)}
                         </div>
                         <div>
-                          <p className="font-medium group-hover:text-primary transition-colors">
+                          <p className="font-medium group-hover:text-[#7073d1] transition-colors">
                             {member.name}
                           </p>
-                          <p className="content-tertiary text-sm flex items-center gap-1">
+                          <p className="text-gray-600 text-sm flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             Joined {new Date(parseInt(member.joined)).toLocaleDateString()}
                           </p>

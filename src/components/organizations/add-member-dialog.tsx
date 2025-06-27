@@ -118,12 +118,12 @@ export function AddMemberDialog({
       <DialogContent className="sm:max-w-[480px] shadow-strong border border-gray-200 bg-white">
         <DialogHeader className="space-y-3 pb-6">
           <DialogTitle className="flex items-center gap-3 text-2xl">
-            <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
-              <UserPlus className="h-6 w-6 text-primary" />
+            <div className="h-10 w-10 bg-[#7073d1]/10 rounded-lg flex items-center justify-center">
+              <UserPlus className="h-6 w-6 text-[#7073d1]" />
             </div>
             Add Member
           </DialogTitle>
-          <DialogDescription className="content-secondary text-balance">
+          <DialogDescription className="text-gray-600 text-balance">
             Add a new member to this organization. They will be granted access to collaborate and will be verified on-chain as part of your organization's collection.
           </DialogDescription>
         </DialogHeader>
@@ -145,7 +145,7 @@ export function AddMemberDialog({
                         disabled={isSubmitting}
                       />
                     </FormControl>
-                    <FormDescription className="content-tertiary">
+                    <FormDescription className="text-gray-600">
                       The Privy user ID of the person to add. This typically starts with "did:privy:" followed by a unique identifier. You can find this in their profile or ask them to share it.
                     </FormDescription>
                     <FormMessage />
@@ -172,29 +172,29 @@ export function AddMemberDialog({
                       <SelectContent className="bg-white border border-gray-200 shadow-medium">
                         <SelectItem value="member">
                           <div className="flex items-center gap-3 py-2">
-                            <div className="h-8 w-8 bg-muted rounded-full flex items-center justify-center">
+                            <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
                               <UserPlus className="h-4 w-4" />
                             </div>
                             <div>
                               <p className="font-medium">Member</p>
-                              <p className="text-xs text-muted-foreground">Can view and contribute to works</p>
+                              <p className="text-xs text-gray-500">Can view and contribute to works</p>
                             </div>
                           </div>
                         </SelectItem>
                         <SelectItem value="admin">
                           <div className="flex items-center gap-3 py-2">
-                            <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
-                              <UserPlus className="h-4 w-4 text-primary" />
+                            <div className="h-8 w-8 bg-[#7073d1]/10 rounded-full flex items-center justify-center">
+                              <UserPlus className="h-4 w-4 text-[#7073d1]" />
                             </div>
                             <div>
                               <p className="font-medium">Admin</p>
-                              <p className="text-xs text-muted-foreground">Can manage members and organization settings</p>
+                              <p className="text-xs text-gray-500">Can manage members and organization settings</p>
                             </div>
                           </div>
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormDescription className="content-tertiary">
+                    <FormDescription className="text-gray-600">
                       Choose the appropriate role based on the level of access and responsibility this person should have within the organization.
                     </FormDescription>
                     <FormMessage />
@@ -203,27 +203,27 @@ export function AddMemberDialog({
               />
             </div>
 
-            <div className="pt-4 border-t bg-muted/20 -mx-6 px-6 pb-6 mt-6">
+            <div className="pt-4 border-t bg-gray-50 -mx-6 px-6 pb-6 mt-6">
               <div className="space-y-3 mb-6">
                 <h4 className="font-medium flex items-center gap-2">
-                  <UserPlus className="h-4 w-4 text-primary" />
+                  <UserPlus className="h-4 w-4 text-[#7073d1]" />
                   Member addition process
                 </h4>
-                <ul className="space-y-2 content-secondary text-sm">
+                <ul className="space-y-2 text-gray-600 text-sm">
                   <li className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    <div className="h-1.5 w-1.5 bg-[#7073d1] rounded-full" />
                     Member will be added to organization database
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    <div className="h-1.5 w-1.5 bg-[#7073d1] rounded-full" />
                     On-chain verification will be created
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    <div className="h-1.5 w-1.5 bg-[#7073d1] rounded-full" />
                     Access permissions will be granted
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    <div className="h-1.5 w-1.5 bg-[#7073d1] rounded-full" />
                     Ready to collaborate on IP works
                   </li>
                 </ul>
