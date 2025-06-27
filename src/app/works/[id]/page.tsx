@@ -11,8 +11,9 @@ import { toast } from 'sonner'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { usePrivy } from '@privy-io/react-auth'
-import { Calendar, DollarSign, Users, Shield, Copy, ExternalLink, Info, TrendingUp, Activity, Loader2 } from 'lucide-react'
+import { Calendar, DollarSign, Users, Shield, Copy, ExternalLink, Info, TrendingUp, Activity, Loader2, Clock, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useWorkRoyaltyData } from '@/hooks/use-work-royalty-data'
 
 interface Contributor {
   id: string
@@ -44,6 +45,10 @@ export default function WorkDetailsPage() {
   const [work, setWork] = useState<Work | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
+  
+  // Fetch royalty data for this work
+  const royaltyData = useWorkRoyaltyData(workId, accessToken)
 
   useEffect(() => {
     const fetchWork = async () => {
@@ -51,14 +56,15 @@ export default function WorkDetailsPage() {
         setLoading(true)
         setError(null)
         
-        const accessToken = await getAccessToken()
-        if (!accessToken) {
+        const token = await getAccessToken()
+        if (!token) {
           throw new Error('No access token available')
         }
+        setAccessToken(token)
 
         const response = await fetch(`/api/works/${workId}`, {
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         })
@@ -104,6 +110,30 @@ export default function WorkDetailsPage() {
       month: 'short',
       day: 'numeric'
     })
+  }
+
+  const formatCurrency = (amount: number, currency: string = 'SOL') => {
+    return `${amount.toFixed(4)} ${currency}`
+  }
+
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  const getEventTypeColor = (eventType: string) => {
+    switch (eventType) {
+      case 'stream': return 'bg-blue-100 text-blue-800'
+      case 'download': return 'bg-green-100 text-green-800'
+      case 'radio': return 'bg-purple-100 text-purple-800'
+      case 'sync': return 'bg-orange-100 text-orange-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
   }
 
   if (loading) {
@@ -170,7 +200,7 @@ export default function WorkDetailsPage() {
               </div>
               
               {/* Quick Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
                 <div className="bg-gradient-to-r from-[#7073d1] to-[#8b8dd6] rounded-lg p-4 text-white">
                   <div className="flex items-center justify-between">
                     <div>
@@ -198,6 +228,18 @@ export default function WorkDetailsPage() {
                       <p className="text-2xl font-bold text-[#202020] font-futura">{work.totalShares}%</p>
                     </div>
                     <Activity className="w-8 h-8 text-[#7073d1]" />
+                  </div>
+                </div>
+
+                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-soft">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-600 text-sm font-space-grotesk">Total Earnings</p>
+                      <p className="text-2xl font-bold text-[#202020] font-futura">
+                        {royaltyData.isLoading ? '...' : formatCurrency(royaltyData.totalEarnings)}
+                      </p>
+                    </div>
+                    <DollarSign className="w-8 h-8 text-[#7073d1]" />
                   </div>
                 </div>
               </div>
@@ -385,6 +427,207 @@ export default function WorkDetailsPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Royalty Income Overview */}
+            <Card className="bg-white shadow-medium border border-gray-200 overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-[#dcddff] to-[#f8f9ff] border-b border-gray-200">
+                <CardTitle className="text-xl font-bold text-[#202020] font-futura flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-[#7073d1]" />
+                  Royalty Income Overview
+                </CardTitle>
+                <CardDescription className="text-gray-600 font-space-grotesk">
+                  Total earnings and distribution status for this work
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {royaltyData.isLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-[#7073d1]" />
+                    <span className="ml-2 text-gray-600 font-space-grotesk">Loading royalty data...</span>
+                  </div>
+                ) : royaltyData.error ? (
+                  <div className="text-center py-8">
+                    <p className="text-red-600 font-space-grotesk">{royaltyData.error}</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-green-700 text-sm font-space-grotesk">Total Earnings</p>
+                          <p className="text-2xl font-bold text-green-800 font-futura">
+                            {formatCurrency(royaltyData.totalEarnings)}
+                          </p>
+                        </div>
+                        <ArrowUpRight className="w-8 h-8 text-green-600" />
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-blue-700 text-sm font-space-grotesk">Total Distributed</p>
+                          <p className="text-2xl font-bold text-blue-800 font-futura">
+                            {formatCurrency(royaltyData.totalDistributed)}
+                          </p>
+                        </div>
+                        <ArrowDownRight className="w-8 h-8 text-blue-600" />
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-orange-700 text-sm font-space-grotesk">Pending Distribution</p>
+                          <p className="text-2xl font-bold text-orange-800 font-futura">
+                            {formatCurrency(royaltyData.totalOwed)}
+                          </p>
+                        </div>
+                        <DollarSign className="w-8 h-8 text-orange-600" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Contributor Earnings Breakdown */}
+            {!royaltyData.isLoading && !royaltyData.error && royaltyData.contributorEarnings.length > 0 && (
+              <Card className="bg-white shadow-medium border border-gray-200 overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-[#dcddff] to-[#f8f9ff] border-b border-gray-200">
+                  <CardTitle className="text-xl font-bold text-[#202020] font-futura flex items-center gap-2">
+                    <Users className="w-5 h-5 text-[#7073d1]" />
+                    Contributor Earnings Breakdown
+                  </CardTitle>
+                  <CardDescription className="text-gray-600 font-space-grotesk">
+                    Individual earnings and distribution status for each contributor
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {royaltyData.contributorEarnings.map((contributor) => (
+                      <div key={contributor.contributorId} className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-[#dcddff] rounded-full flex items-center justify-center">
+                              <Users className="w-5 h-5 text-[#7073d1]" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-[#202020] font-futura">{contributor.contributorName}</h4>
+                              <p className="text-sm text-gray-600 font-space-grotesk">{contributor.sharePercentage}% ownership</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-[#202020] font-futura">
+                              {formatCurrency(contributor.totalOwed)}
+                            </p>
+                            <p className="text-sm text-gray-600 font-space-grotesk">pending</p>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div className="text-center">
+                            <p className="text-gray-600 font-space-grotesk">Total Earned</p>
+                            <p className="font-bold text-[#202020] font-futura">
+                              {formatCurrency(contributor.totalEarned)}
+                            </p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-gray-600 font-space-grotesk">Distributed</p>
+                            <p className="font-bold text-[#202020] font-futura">
+                              {formatCurrency(contributor.totalDistributed)}
+                            </p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-gray-600 font-space-grotesk">Pending</p>
+                            <p className="font-bold text-orange-600 font-futura">
+                              {formatCurrency(contributor.totalOwed)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Usage Events Timeline */}
+            {!royaltyData.isLoading && !royaltyData.error && royaltyData.usageEvents.length > 0 && (
+              <Card className="bg-white shadow-medium border border-gray-200 overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-[#dcddff] to-[#f8f9ff] border-b border-gray-200">
+                  <CardTitle className="text-xl font-bold text-[#202020] font-futura flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-[#7073d1]" />
+                    Usage Events Timeline
+                  </CardTitle>
+                  <CardDescription className="text-gray-600 font-space-grotesk">
+                    Recent usage events and revenue generation for this work
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {royaltyData.usageEvents.map((event) => (
+                      <div key={event.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-[#dcddff] rounded-full flex items-center justify-center">
+                            <Activity className="w-5 h-5 text-[#7073d1]" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge className={`${getEventTypeColor(event.event_type)} text-xs font-space-grotesk`}>
+                                {event.event_type}
+                              </Badge>
+                              <span className="text-sm font-medium text-gray-700 font-space-grotesk">
+                                {event.platform}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-600 font-space-grotesk flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {formatDateTime(event.reported_at)}
+                            </p>
+                            {event.play_count && (
+                              <p className="text-xs text-gray-600 font-space-grotesk">
+                                {event.play_count.toLocaleString()} plays
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-[#202020] font-futura">
+                            {formatCurrency(event.revenue_amount, event.currency)}
+                          </p>
+                          <p className="text-xs text-gray-600 font-space-grotesk">
+                            {formatDate(event.period_start)} - {formatDate(event.period_end)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* No Usage Events Message */}
+            {!royaltyData.isLoading && !royaltyData.error && royaltyData.usageEvents.length === 0 && (
+              <Card className="bg-white shadow-medium border border-gray-200 overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-[#dcddff] to-[#f8f9ff] border-b border-gray-200">
+                  <CardTitle className="text-xl font-bold text-[#202020] font-futura flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-[#7073d1]" />
+                    Usage Events Timeline
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="text-center py-8">
+                    <Activity className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 font-futura">No Usage Events Yet</h3>
+                    <p className="text-gray-600 font-space-grotesk">
+                      When this work generates revenue from streaming, downloads, or other usage, 
+                      the events will appear here.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Sidebar */}
