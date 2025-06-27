@@ -1,240 +1,135 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { ArrowRight, Shield, Zap, Users, ChevronDown } from 'lucide-react'
+import { Menu, Shield, Zap, Users } from 'lucide-react'
 import Link from 'next/link'
-
-const navigationItems = [
-  { label: 'Features', href: '#features' },
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'About', href: '#about' },
-]
-
-const features = [
-  {
-    icon: Shield,
-    title: 'Secure Ownership',
-    description: 'Blockchain-verified intellectual property rights with immutable proof of creation and ownership.',
-  },
-  {
-    icon: Zap,
-    title: 'Instant Royalties',
-    description: 'Automated royalty distribution to all contributors based on predefined ownership shares.',
-  },
-  {
-    icon: Users,
-    title: 'Collaborative Control',
-    description: 'Transparent contributor management with clear ownership stakes and automated payments.',
-  },
-]
-
-const steps = [
-  {
-    number: '01',
-    title: 'Register Your Work',
-    description: 'Upload your intellectual property and establish verifiable ownership on the blockchain.',
-  },
-  {
-    number: '02',
-    title: 'Define Contributors',
-    description: 'Set ownership percentages for all contributors, collaborators, and stakeholders.',
-  },
-  {
-    number: '03',
-    title: 'Earn & Distribute',
-    description: 'Automatically receive and distribute royalties to all parties based on their ownership share.',
-  },
-]
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Navigation */}
-      <nav className="sticky top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 py-4">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1541599468348-e96984315921?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
+      </div>
+
+      {/* Content Overlay */}
+      <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Navigation */}
+        <nav className="w-full px-8 py-6">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <div className="w-4 h-4 bg-white rounded-sm"></div>
-              </div>
-              <span className="text-xl font-semibold">IP OnChain</span>
+              <span className="text-2xl font-light text-white tracking-wide">volcano</span>
             </div>
 
-            {/* Navigation Items */}
-            <div className="hidden md:flex items-center space-x-8">
-              {navigationItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-
-            {/* CTA */}
-            <Link href="/auth/login">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                Get Started
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <section className="pt-24 pb-32 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center space-y-12">
-            <div className="space-y-6">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-balance">
-                Protect and Monetize Your
-                <br />
-                <span className="text-primary">Intellectual Property</span>
-                <br />
-                On-Chain
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-balance">
-                The modern platform for creators to register, protect, and automatically distribute royalties 
-                for their intellectual property using blockchain technology.
-              </p>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/auth/login">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg">
-                  Start Protecting Your IP
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
-                Learn More
-                <ChevronDown className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
-
-            {/* Stats */}
-            <div className="pt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary">10K+</div>
-                <div className="text-muted-foreground">Works Protected</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary">$2M+</div>
-                <div className="text-muted-foreground">Royalties Distributed</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary">500+</div>
-                <div className="text-muted-foreground">Active Creators</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="py-24 px-6 bg-muted/30">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">
-              Why Choose IP OnChain
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Built for modern creators who demand transparency, security, and fair compensation.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feature, index) => {
-              const Icon = feature.icon
-              return (
-                <div key={index} className="bg-card p-8 rounded-xl shadow-soft border border-border">
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <Icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-semibold">{feature.title}</h3>
-                    <p className="text-muted-foreground">{feature.description}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section id="how-it-works" className="py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">
-              How It Works
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Simple, transparent process to protect and monetize your intellectual property.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {steps.map((step, index) => (
-              <div key={index} className="relative">
-                <div className="space-y-6">
-                  <div className="text-6xl font-bold text-primary/20">{step.number}</div>
-                  <div className="space-y-3">
-                    <h3 className="text-xl font-semibold">{step.title}</h3>
-                    <p className="text-muted-foreground">{step.description}</p>
-                  </div>
-                </div>
-                {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-full w-full h-0.5 bg-border"></div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section id="about" className="py-24 px-6 bg-primary/5">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Ready to Get Started?
-          </h2>
-          <p className="text-xl text-muted-foreground">
-            Join thousands of creators who trust IP OnChain to protect and monetize their intellectual property.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth/login">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg">
-                Start Protecting Your IP
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
-              Schedule a Demo
+            {/* Menu Button */}
+            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+              <Menu className="h-6 w-6" />
             </Button>
           </div>
-        </div>
-      </section>
+        </nav>
 
-      {/* Footer */}
-      <footer className="py-12 px-6 border-t border-border">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <div className="w-4 h-4 bg-white rounded-sm"></div>
+        {/* Main Content Grid */}
+        <div className="flex-1 flex items-center justify-center px-8 py-12">
+          <div className="max-w-7xl mx-auto w-full">
+            {/* Bento Grid Layout */}
+            <div className="grid grid-cols-12 grid-rows-8 gap-4 h-[80vh] max-h-[800px]">
+              
+              {/* Main Hero - Large center piece */}
+              <div className="col-span-12 md:col-span-8 md:col-start-3 row-span-5 flex flex-col items-center justify-center text-center space-y-8">
+                <h1 className="text-6xl md:text-8xl lg:text-9xl font-extralight text-white leading-none tracking-tight">
+                  volcano
+                </h1>
+                
+                <div className="space-y-6">
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-light text-white/90">
+                    How is intellectual property protected?
+                  </h2>
+                  <p className="text-base md:text-lg text-white/70 max-w-2xl mx-auto font-light leading-relaxed">
+                    Volcano creates immutable records of your creative works on the blockchain, 
+                    automatically distributing royalties to all contributors.
+                  </p>
+                </div>
+
+                <Link href="/auth/login">
+                  <Button 
+                    size="lg" 
+                    className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 px-8 py-4 text-lg font-light tracking-wide transition-all duration-300"
+                  >
+                    Learn More!
+                  </Button>
+                </Link>
               </div>
-              <span className="text-lg font-semibold">IP OnChain</span>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              © 2024 IP OnChain. All rights reserved.
+
+              {/* Feature Cards - Minimal bento boxes */}
+              <div className="col-span-4 md:col-span-2 row-span-2 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 flex flex-col justify-center items-center text-center">
+                <Shield className="h-8 w-8 text-white/70 mb-3" />
+                <span className="text-sm font-light text-white/80">Secure</span>
+                <span className="text-xs text-white/60 mt-1">Blockchain verified</span>
+              </div>
+
+              <div className="col-span-4 md:col-span-2 row-span-2 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 flex flex-col justify-center items-center text-center">
+                <Zap className="h-8 w-8 text-white/70 mb-3" />
+                <span className="text-sm font-light text-white/80">Instant</span>
+                <span className="text-xs text-white/60 mt-1">Auto royalties</span>
+              </div>
+
+              <div className="col-span-4 md:col-span-2 row-span-2 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 flex flex-col justify-center items-center text-center">
+                <Users className="h-8 w-8 text-white/70 mb-3" />
+                <span className="text-sm font-light text-white/80">Collaborative</span>
+                <span className="text-xs text-white/60 mt-1">Fair distribution</span>
+              </div>
+
+              {/* Stats Cards */}
+              <div className="col-span-6 md:col-span-3 row-span-1 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-2xl font-light text-white">10K+</div>
+                  <div className="text-xs text-white/60">Works Protected</div>
+                </div>
+              </div>
+
+              <div className="col-span-6 md:col-span-3 row-span-1 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-2xl font-light text-white">$2M+</div>
+                  <div className="text-xs text-white/60">Royalties Paid</div>
+                </div>
+              </div>
+
+              <div className="col-span-6 md:col-span-3 row-span-1 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-2xl font-light text-white">500+</div>
+                  <div className="text-xs text-white/60">Creators</div>
+                </div>
+              </div>
+
+              <div className="col-span-6 md:col-span-3 row-span-1 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-2xl font-light text-white">24/7</div>
+                  <div className="text-xs text-white/60">Protection</div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
-      </footer>
+
+        {/* Footer */}
+        <footer className="w-full px-8 py-6">
+          <div className="flex items-center justify-between text-white/60 text-sm">
+            <div>© 2024 Volcano</div>
+            <div className="flex items-center space-x-6">
+              <span className="hover:text-white/80 cursor-pointer transition-colors">FB</span>
+              <span className="hover:text-white/80 cursor-pointer transition-colors">INS</span>
+              <span className="hover:text-white/80 cursor-pointer transition-colors">LIN</span>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   )
 } 
