@@ -225,12 +225,12 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
         <Card className="shadow-soft border-0">
           <CardContent className="pt-12 pb-12">
             <div className="text-center space-y-4 max-w-md mx-auto">
-              <div className="h-20 w-20 mx-auto bg-destructive/10 rounded-full flex items-center justify-center">
-                <Building2 className="h-10 w-10 text-destructive" />
+              <div className="h-20 w-20 mx-auto bg-red-50 rounded-full flex items-center justify-center">
+                <Building2 className="h-10 w-10 text-red-500" />
               </div>
               <div className="space-y-2">
-                <h3 className="content-primary">Organization not found</h3>
-                <p className="content-secondary">
+                <h3 className="text-[#202020] text-lg font-medium">Organization not found</h3>
+                <p className="text-gray-600">
                   {error || 'The organization you are looking for does not exist or you do not have access to it.'}
                 </p>
               </div>
@@ -285,7 +285,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
                 <Users className="h-6 w-6 text-[#7073d1]" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total Members</p>
+                <p className="text-sm text-gray-600 bg-transparent">Total Members</p>
                 <p className="text-2xl font-bold text-[#202020] font-['Space_Grotesk']">{onChainMembers.length}</p>
               </div>
             </div>
@@ -299,8 +299,8 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
                 <Activity className="h-6 w-6 text-[#7073d1]" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Collection Status</p>
-                <p className="text-lg font-semibold">
+                <p className="text-sm text-gray-600 bg-transparent">Collection Status</p>
+                <p className="text-lg font-semibold text-[#202020]">
                   {organization.collection_address ? 'Active' : 'Setup'}
                 </p>
               </div>
@@ -315,7 +315,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
                 <Crown className="h-6 w-6 text-gray-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Owners</p>
+                <p className="text-sm text-gray-600 bg-transparent">Owners</p>
                 <p className="text-2xl font-bold text-[#202020] font-['Space_Grotesk']">
                   {onChainMembers.filter(m => m.role === 'owner').length}
                 </p>
@@ -331,7 +331,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
                 <Calendar className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Created</p>
+                <p className="text-sm text-gray-600 bg-transparent">Created</p>
                 <p className="text-sm font-semibold text-[#202020]">
                   {new Date(organization.created_at || '').toLocaleDateString()}
                 </p>
@@ -347,11 +347,11 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
         <div className="lg:col-span-2 space-y-6">
           <Card className="shadow-soft border border-gray-200 bg-white">
             <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2">
-                <Hash className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-[#202020] bg-transparent">
+                <Hash className="h-5 w-5 text-gray-600" />
                 Organization Details
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-gray-600 bg-transparent">
                 Comprehensive information and on-chain verification status
               </CardDescription>
             </CardHeader>
@@ -360,7 +360,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-[#7073d1]" />
-                  <span className="font-medium">Collection Status</span>
+                  <span className="font-medium text-[#202020] bg-transparent">Collection Status</span>
                 </div>
                 
                 {organization.collection_address ? (
@@ -373,7 +373,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
                     </div>
                     
                     <div className="space-y-2">
-                      <p className="text-gray-600 text-sm">Collection Address</p>
+                      <p className="text-gray-600 text-sm bg-transparent">Collection Address</p>
                       <div className="p-3 bg-white rounded-lg border border-gray-200">
                         <p className="text-sm font-mono text-[#7073d1] break-all">
                           {organization.collection_address}
@@ -417,7 +417,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                 <Calendar className="h-5 w-5 text-gray-500" />
                 <div>
-                  <p className="text-gray-600">Organization Created</p>
+                  <p className="text-gray-600 bg-transparent">Organization Created</p>
                   <p className="font-medium text-[#202020]">
                     {new Date(organization.created_at || '').toLocaleDateString('en-US', {
                       year: 'numeric',
@@ -434,11 +434,11 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
         {/* Members Panel */}
         <Card className="shadow-soft border border-gray-200 bg-white">
           <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-[#202020] bg-transparent">
+              <Users className="h-5 w-5 text-gray-600" />
               Members ({onChainMembers.length})
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-600 bg-transparent">
               Organization members with roles and permissions
             </CardDescription>
           </CardHeader>
