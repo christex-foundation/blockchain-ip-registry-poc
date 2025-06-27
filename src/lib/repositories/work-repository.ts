@@ -1,4 +1,5 @@
 import { createServerSupabaseClient, Database } from '../supabase'
+import { mintWorkNFT, getAssetData, getAssetAttributes } from '../onchain'
 
 type Work = Database['public']['Tables']['works']['Row']
 type WorkInsert = Database['public']['Tables']['works']['Insert']
@@ -140,5 +141,60 @@ export class WorkRepository {
     }
 
     return count || 0
+  }
+
+  /**
+   * Mint work as NFT and update database record
+   * Delegates to onchain module for blockchain operations
+   */
+  static async mintWorkNFT(params: {
+    workId: string
+    ownerAddress: string
+    metadata: {
+      name: string
+      uri: string
+    }
+    contributors: Array<{
+      name: string
+      wallet: string
+      share: number
+    }>
+    isrc?: string
+    description?: string
+  }) {
+    // Mint the NFT using onchain module
+    const result = await mintWorkNFT(params)
+    
+    // Update database with blockchain information
+    await this.updateNftMintAddress(params.workId, result.assetId)
+    await this.updateMetadataUri(params.workId, params.metadata.uri)
+    
+    return result
+  }
+
+  /**
+   * Get work's blockchain asset data
+   * Delegates to onchain module for asset fetching
+   */
+  static async getWorkAssetData(workId: string) {
+    const work = await this.findById(workId)
+    if (!work?.nft_mint_address) {
+      return null
+    }
+    
+    return getAssetData(work.nft_mint_address)
+  }
+
+  /**
+   * Get work's on-chain attributes
+   * Delegates to onchain module for attribute fetching
+   */
+  static async getWorkOnChainAttributes(workId: string) {
+    const work = await this.findById(workId)
+    if (!work?.nft_mint_address) {
+      return null
+    }
+    
+    return getAssetAttributes(work.nft_mint_address)
   }
 }

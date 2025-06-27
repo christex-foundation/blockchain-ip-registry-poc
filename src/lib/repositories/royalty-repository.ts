@@ -1,4 +1,5 @@
 import { createServerSupabaseClient, Database } from '../supabase'
+import { distributeRoyalties } from '../onchain'
 
 type RoyaltyDistribution = Database['public']['Tables']['royalty_distributions']['Row']
 type RoyaltyDistributionInsert = Database['public']['Tables']['royalty_distributions']['Insert']
@@ -153,5 +154,36 @@ export class RoyaltyRepository {
     }
 
     return count || 0
+  }
+
+  /**
+   * Execute royalty distribution and update database
+   * Delegates to onchain module for blockchain operations
+   */
+  static async executeRoyaltyDistribution(distributionId: string, params: {
+    fromWalletId: string
+    distributions: Array<{
+      toAddress: string
+      amount: number // in lamports
+      recipient: string
+    }>
+  }) {
+    // Update status to processing
+    await this.updateStatus(distributionId, 'processing')
+    
+    try {
+      // Execute blockchain distribution
+      const result = await distributeRoyalties(params)
+      
+      // Mark as completed with transaction signatures
+      const signatures = result.distributions.map(d => d.signature).join(',')
+      await this.markAsCompleted(distributionId, signatures)
+      
+      return result
+    } catch (error) {
+      // Mark as failed if distribution fails
+      await this.markAsFailed(distributionId)
+      throw error
+    }
   }
 }

@@ -12,6 +12,13 @@ vi.mock('@/lib/supabase', () => ({
   createServerSupabaseClient: vi.fn(() => mockSupabaseClient),
 }))
 
+// Mock the onchain module
+vi.mock('@/lib/onchain', () => ({
+  mintWorkNFT: vi.fn(),
+  getAssetData: vi.fn(),
+  getAssetAttributes: vi.fn(),
+}))
+
 describe('WorkRepository - Contract Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks()

@@ -15,6 +15,16 @@ vi.mock('../user-repository', () => ({
   },
 }))
 
+// Mock the onchain module
+vi.mock('@/lib/onchain', () => ({
+  createOrganizationCollection: vi.fn(),
+  addOrganizationMember: vi.fn(),
+  checkOrganizationMembership: vi.fn(),
+  getOrganizationMembers: vi.fn(),
+  getCollectionData: vi.fn(),
+  getCollectionAttributes: vi.fn(),
+}))
+
 const mockSupabaseClient = {
   from: vi.fn(),
 }
