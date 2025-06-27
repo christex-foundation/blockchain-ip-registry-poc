@@ -33,7 +33,9 @@
       "Bash(git:*)",
       "Bash(unzip:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }
