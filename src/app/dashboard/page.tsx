@@ -100,7 +100,7 @@ function WorkCard({ work }: { work: Work }) {
   return (
     <Card className="group bg-white border border-gray-200 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
       <CardContent className="p-6">
-        <div className="grid gap-5">
+        <div className="grid gap-6">
           {/* Header */}
           <div className="grid grid-cols-[1fr_min-content] gap-4 items-start">
             <div className="space-y-3 min-w-0">
@@ -108,7 +108,7 @@ function WorkCard({ work }: { work: Work }) {
                 <div className="p-2 rounded-lg bg-[#dcddff]/50 shadow-soft">
                   <Music className="w-4 h-4 text-[#7073d1]" />
                 </div>
-                <h3 className="font-semibold text-[#202020] text-lg leading-tight truncate font-['Space_Grotesk']">
+                <h3 className="font-semibold text-[#202020] text-xl leading-tight truncate font-['Space_Grotesk']">
                   {work.title}
                 </h3>
               </div>
@@ -143,7 +143,7 @@ function WorkCard({ work }: { work: Work }) {
           </div>
 
           {/* Contributors Section */}
-          <div className="space-y-4 pt-1 border-t border-gray-200">
+          <div className="space-y-4 pt-4 border-t border-gray-200">
             <div className="grid grid-cols-[1fr_min-content] gap-2 items-center">
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-[#7073d1]" />
@@ -216,12 +216,12 @@ function WorkCard({ work }: { work: Work }) {
           </div>
 
           {/* Actions */}
-          <div className="grid grid-cols-[1fr_min-content] gap-3 pt-1 border-t border-gray-200">
+          <div className="grid grid-cols-[1fr_min-content] gap-3 pt-4 border-t border-gray-200">
             <Link href={`/works/${work.id}`} className="min-w-0">
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="w-full border-gray-200 hover:border-[#7073d1] hover:bg-[#dcddff]/30 text-[#202020]/80 hover:text-[#7073d1] transition-all duration-200 shadow-soft hover:shadow-medium font-medium font-['Futura']"
+                className="w-full border-gray-200 hover:border-[#7073d1] hover:bg-[#dcddff]/30 text-[#202020] hover:text-[#7073d1] transition-all duration-200 shadow-soft hover:shadow-medium font-medium font-['Futura'] bg-white"
               >
                 <Eye className="w-3.5 h-3.5 mr-1.5" />
                 View Details
@@ -230,7 +230,7 @@ function WorkCard({ work }: { work: Work }) {
             <Button
               size="sm"
               onClick={() => toast.info('Distribution feature coming in Week 3!')}
-              className="bg-[#7073d1] hover:bg-[#5c5fb3] text-white shadow-soft hover:shadow-medium transition-all duration-200 hover:-translate-y-0.5 font-medium font-['Space_Grotesk']"
+              className="bg-[#7073d1] hover:bg-[#5c5fb3] text-white shadow-soft hover:shadow-medium transition-all duration-200 hover:-translate-y-0.5 font-medium font-['Space_Grotesk'] border-0"
             >
               <Share2 className="w-3.5 h-3.5 mr-1.5" />
               Distribute
@@ -336,7 +336,7 @@ function DashboardContent() {
                 Monitor your intellectual property portfolio and royalty performance with comprehensive analytics and insights.
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 items-center">
               <Button 
                 onClick={async () => {
                   if (!accessToken) return
@@ -362,12 +362,16 @@ function DashboardContent() {
                   }
                 }}
                 variant="outline"
-                className="border-[#7073d1] text-[#7073d1] hover:bg-[#dcddff]/30"
+                size="default"
+                className="border-[#7073d1] text-[#7073d1] hover:bg-[#dcddff]/30 hover:border-[#5c5fb3] bg-white font-medium shadow-soft hover:shadow-medium transition-all duration-200"
               >
                 Generate Mock Data
               </Button>
               <Link href="/register-work">
-                <Button className="bg-[#7073d1] hover:bg-[#5c5fb3] text-white px-6 py-3 font-medium shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-0.5">
+                <Button 
+                  size="default"
+                  className="bg-[#7073d1] hover:bg-[#5c5fb3] text-white px-6 font-medium shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-0.5 border-0"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Register New Work
                 </Button>
@@ -452,7 +456,10 @@ function DashboardContent() {
                       </p>
                     </div>
                     <Link href="/register-work">
-                      <Button className="bg-[#7073d1] hover:bg-[#5c5fb3] text-white px-8 py-3 font-medium shadow-soft hover:shadow-medium transition-all">
+                      <Button 
+                        size="lg"
+                        className="bg-[#7073d1] hover:bg-[#5c5fb3] text-white px-8 font-medium shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-0.5 border-0"
+                      >
                         <Plus className="w-4 h-4 mr-2" />
                         Register Your First Work
                       </Button>
