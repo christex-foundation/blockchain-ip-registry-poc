@@ -268,7 +268,7 @@ export function CreateOrganizationDialog({
                   variant="outline"
                   onClick={() => onOpenChange(false)}
                   disabled={isSubmitting}
-                  className="shadow-soft border-gray-200 text-[#202020] hover:bg-gray-50"
+                  className="bg-white shadow-soft border-gray-200 text-[#202020] hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
                 >
                   Cancel
                 </Button>

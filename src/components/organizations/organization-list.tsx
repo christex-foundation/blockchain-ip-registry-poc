@@ -161,8 +161,8 @@ export function OrganizationList() {
           <Card className="shadow-soft border border-gray-200 bg-gradient-to-br from-[#7073d1]/5 to-[#7073d1]/10">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <BarChart3 className="h-6 w-6 text-primary" />
+                <div className="h-12 w-12 bg-[#7073d1]/10 rounded-lg flex items-center justify-center">
+                  <BarChart3 className="h-6 w-6 text-[#7073d1]" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Total Organizations</p>
@@ -175,8 +175,8 @@ export function OrganizationList() {
           <Card className="shadow-soft border border-gray-200 bg-gradient-to-br from-[#dcddff]/30 to-[#dcddff]/40">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 bg-accent/40 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-secondary" />
+                <div className="h-12 w-12 bg-[#dcddff]/60 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-[#7073d1]" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Active Collections</p>
@@ -188,11 +188,11 @@ export function OrganizationList() {
             </CardContent>
           </Card>
           
-          <Card className="shadow-soft border border-gray-200 bg-gradient-to-br from-[#202020]/5 to-[#202020]/10">
+          <Card className="shadow-soft border border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 bg-secondary/10 rounded-lg flex items-center justify-center">
-                  <Building2 className="h-6 w-6 text-secondary" />
+                <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                  <Building2 className="h-6 w-6 text-gray-600" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">In Setup</p>
@@ -235,17 +235,17 @@ export function OrganizationList() {
           {organizations.map((org) => (
             <Card 
               key={org.id} 
-              className="group shadow-soft hover:shadow-medium transition-all duration-200 border border-gray-200 bg-white hover:scale-[1.02]"
+              className="group shadow-soft hover:shadow-medium transition-all duration-200 border border-gray-200 bg-white hover:scale-[1.02] hover:-translate-y-1"
             >
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <CardTitle className="flex items-center gap-2 group-hover:text-primary transition-colors">
-                      <Building2 className="h-5 w-5" />
+                    <CardTitle className="flex items-center gap-2 text-[#202020] group-hover:text-[#7073d1] transition-colors font-['Space_Grotesk'] font-semibold">
+                      <Building2 className="h-5 w-5 text-[#7073d1]" />
                       {org.name}
                     </CardTitle>
-                    <CardDescription className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
+                    <CardDescription className="flex items-center gap-1 text-gray-600">
+                      <Calendar className="h-3 w-3 text-gray-500" />
                       Created {new Date(org.created_at || '').toLocaleDateString()}
                     </CardDescription>
                   </div>
@@ -255,12 +255,12 @@ export function OrganizationList() {
                 {/* Status Badge */}
                 <div className="flex items-center gap-2">
                   {org.collection_address ? (
-                    <Badge variant="default" className="flex items-center gap-1 shadow-soft">
+                    <Badge className="flex items-center gap-1 shadow-soft bg-[#7073d1]/10 text-[#7073d1] border-[#7073d1]/20 hover:bg-[#7073d1]/20">
                       <ExternalLink className="h-3 w-3" />
                       On-chain Active
                     </Badge>
                   ) : (
-                    <Badge variant="secondary" className="shadow-soft">
+                    <Badge className="shadow-soft bg-gray-100 text-[#202020]/60 border-gray-200 hover:bg-gray-200">
                       Setting up...
                     </Badge>
                   )}
@@ -268,9 +268,9 @@ export function OrganizationList() {
                 
                 {/* Collection Address */}
                 {org.collection_address && (
-                  <div className="p-3 bg-muted/50 rounded-lg">
-                    <p className="content-tertiary mb-1">Collection Address</p>
-                    <div className="text-xs font-mono text-primary">
+                  <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <p className="text-xs text-gray-600 mb-1 font-medium">Collection Address</p>
+                    <div className="text-xs font-mono text-[#7073d1] bg-white px-2 py-1 rounded border">
                       {org.collection_address.slice(0, 12)}...{org.collection_address.slice(-12)}
                     </div>
                   </div>
