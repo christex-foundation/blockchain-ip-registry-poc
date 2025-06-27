@@ -14,7 +14,7 @@ import {
   updateCollectionPluginV1,
   Attribute 
 } from '@metaplex-foundation/mpl-core'
-import { privyServer } from './privy-server'
+import { getUserSolanaWalletFromPrivy } from './onchain/wallet-utils'
 import { WorkRepository } from './repositories/work-repository'
 import { connection, SERVER_KEYPAIR, createUmiInstance } from './onchain/solana-config'
 
@@ -71,35 +71,8 @@ export function createOnChainAttributes(workData: {
   ]
 }
 
-/**
- * Get user's Solana wallet from Privy
- */
-export async function getUserSolanaWalletFromPrivy(userId: string) {
-  try {
-    const user = await privyServer.getUser(userId)
-    console.log('user')
-    console.table(user.linkedAccounts)
-    if (!user?.linkedAccounts) {
-      throw new Error('User has no linked accounts')
-    }
-
-    const solanaWallet = user.linkedAccounts.find(
-      (account) => account.type === 'wallet' && account.chainType === 'solana',
-    )
-
-    if (!solanaWallet?.address) {
-      throw new Error('User has no Solana wallet')
-    }
-
-    return {
-      address: solanaWallet.address,
-      walletId: solanaWallet.id,
-    }
-  } catch (error) {
-    console.error('Failed to get user Solana wallet:', error)
-    throw error
-  }
-}
+// Re-export wallet utilities
+export { getUserSolanaWalletFromPrivy } from './onchain/wallet-utils'
 
 /**
  * Create on-chain metadata for IP work (following Core NFT standards)
