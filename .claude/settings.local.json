@@ -12,7 +12,15 @@
       "Bash(npm run test:run:*)",
       "mcp__supabase__list_projects",
       "mcp__supabase__list_tables",
-      "mcp__supabase__execute_sql"
+      "mcp__supabase__execute_sql",
+      "mcp__solanaMcp__Solana_Expert__Ask_For_Help",
+      "mcp__solanaMcp__search",
+      "mcp__solanaMcp__Solana_Documentation_Search",
+      "mcp__solanaMcp__Ask_Solana_Anchor_Framework_Expert",
+      "Bash(ls:*)",
+      "mcp__supabase__apply_migration",
+      "Bash(rm:*)",
+      "Bash(npm run test:*)"
     ],
     "deny": []
   }
