@@ -22,10 +22,10 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
   // Show loading while Privy is initializing
   if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary/20 border-t-primary mx-auto"></div>
+          <p className="content-secondary">Loading...</p>
         </div>
       </div>
     )
@@ -34,10 +34,10 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
   // Show loading while redirecting unauthenticated users
   if (!authenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Redirecting to login...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary/20 border-t-primary mx-auto"></div>
+          <p className="content-secondary">Redirecting to login...</p>
         </div>
       </div>
     )

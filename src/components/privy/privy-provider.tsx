@@ -21,7 +21,7 @@ export function PrivyAppProvider({ children }: PrivyAppProviderProps) {
         // Customize Privy's appearance and behavior
         appearance: {
           theme: 'light',
-          accentColor: '#676FFF',
+          accentColor: '#7073d1',
           logo: '/logo.png', // Add your logo here
         },
         // Configure embedded wallets
