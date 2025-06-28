@@ -214,9 +214,47 @@ If seeing "invalid input syntax for type uuid" errors:
 - Supabase mock chaining must return correct objects for method chaining
 - Use OrganizationBuilder with explicit null handling for collection addresses
 
+## Architecture Governance
+
+### Pre-Merge Requirements
+
+Before merging any branch to main, ensure:
+
+1. **Technical Specification Compliance**
+   - Review changes against `/docs/TECHNICAL_SPECIFICATION.md`
+   - Verify no architectural patterns have been violated
+   - Check that new features align with existing system design
+
+2. **Architecture Decision Records (ADRs)**
+   - If implementation diverges from technical specification, create an ADR
+   - Document the architectural decision in `/docs/adrs/YYYY-MM-DD-decision-title.md`
+   - Include context, options considered, decision made, and consequences
+   - Update TECHNICAL_SPECIFICATION.md to reflect approved changes
+
+3. **ADR Template**
+   Use `/docs/adrs/ADR-TEMPLATE.md` as the starting point for new ADRs
+
+### Common Architecture Violations to Check
+
+- User ID conversion patterns (Privy → Database UUID)
+- Repository layer bypass (direct Supabase calls)
+- On-chain operations without proper error handling
+- API routes without authentication verification
+- Database schema changes without migration files
+- Inconsistent data storage between on-chain and off-chain systems
+
+### Architecture Decision Process
+
+1. **Identify Need**: When implementation must diverge from current architecture
+2. **Create ADR**: Document the decision using the template
+3. **Review**: Get team consensus on the architectural change
+4. **Accept**: Mark ADR as accepted and update technical specification
+5. **Implement**: Proceed with implementation following the decided approach
+
 ## Documentation References
 
-- `/docs/ORGANIZATION_FEATURE.md` - Complete organization implementation details
-- `/docs/AUTHENTICATION_FLOW.md` - Privy integration patterns
-- `/docs/DUAL_STORAGE_IMPLEMENTATION.md` - Hybrid storage architecture
-- `/docs/TESTING_STRATEGY.md` - Comprehensive testing approach and current coverage
+- `/docs/TECHNICAL_SPECIFICATION.md` - Single source of truth for platform architecture
+- `/docs/adrs/` - Architecture Decision Records for all architectural changes
+- `/docs/archive/` - Archived individual documentation files
+- `/docs/IP_DESIGN_SYSTEM.md` - UI/UX design guidelines
+- `/docs/VOLCANO_DESIGN_SYSTEM.md` - Landing page design system

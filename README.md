@@ -138,8 +138,14 @@ pnpm test:coverage
 
 For detailed implementation information, see:
 
-- [`/docs/AUTHENTICATION_FLOW.md`](./docs/AUTHENTICATION_FLOW.md) - Authentication system
-- [`/docs/DUAL_STORAGE_IMPLEMENTATION.md`](./docs/DUAL_STORAGE_IMPLEMENTATION.md) - Data storage architecture
-- [`/docs/SUPABASE_INTEGRATION.md`](./docs/SUPABASE_INTEGRATION.md) - Database integration
-- [`/docs/TESTING_STRATEGY.md`](./docs/TESTING_STRATEGY.md) - Testing approach
-- [`IMPLEMENTATION_PROGRESS.md`](./IMPLEMENTATION_PROGRESS.md) - Organization feature details
+### Primary Documentation
+- [`/docs/TECHNICAL_SPECIFICATION.md`](./docs/TECHNICAL_SPECIFICATION.md) - **Complete technical specification** (single source of truth)
+- [`/docs/adrs/`](./docs/adrs/) - Architecture Decision Records for architectural changes
+- [`/CLAUDE.md`](./CLAUDE.md) - Development guidance for Claude Code
+
+### Design Documentation
+- [`/docs/IP_DESIGN_SYSTEM.md`](./docs/IP_DESIGN_SYSTEM.md) - UI/UX design guidelines
+- [`/docs/VOLCANO_DESIGN_SYSTEM.md`](./docs/VOLCANO_DESIGN_SYSTEM.md) - Landing page design system
+
+### Archived Documentation
+- [`/docs/archive/`](./docs/archive/) - Individual documentation files (archived)
