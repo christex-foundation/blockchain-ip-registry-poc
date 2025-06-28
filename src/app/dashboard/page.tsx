@@ -8,51 +8,73 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { AuthGuard } from '@/components/privy/auth-guard'
+import { usePrivyAuth } from '@/components/privy/use-privy-auth'
+import { apiClient } from '@/lib/api-client'
 
-// Mock data - will be replaced with real data from blockchain/database
-const mockRegisteredWorks = [
-  {
-    id: '1',
-    title: 'Midnight Dreams',
-    isrc: 'USUM71234567',
-    mintAddress: 'ABC123...XYZ789',
-    contributors: [
-      { name: 'Artist One', wallet: '9WzDXw...', share: 60 },
-      { name: 'Producer Two', wallet: '5KjHgT...', share: 40 },
-    ],
-    totalRoyalties: 2.5,
-    lastDistribution: '2024-01-15',
-    status: 'active'
-  },
-  {
-    id: '2', 
-    title: 'Electric Sunset',
-    isrc: 'USUM71234568',
-    mintAddress: 'DEF456...ABC123',
-    contributors: [
-      { name: 'Band Lead', wallet: '7TgFdS...', share: 50 },
-      { name: 'Songwriter', wallet: '3MnBvC...', share: 30 },
-      { name: 'Engineer', wallet: '8LpQwE...', share: 20 },
-    ],
-    totalRoyalties: 1.8,
-    lastDistribution: '2024-01-10',
-    status: 'active'
-  }
-]
+interface Work {
+  id: string
+  title: string
+  isrc?: string
+  contributors: Array<{
+    name: string
+    wallet: string
+    share: number
+  }>
+  metadataUri?: string
+  createdAt: string
+  status: string
+}
 
-export default function DashboardPage() {
+function DashboardContent() {
+  const [works, setWorks] = useState<Work[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const { getAccessToken, user, userEmail } = usePrivyAuth()
 
-  // Simulate loading state
+  // Load user's works
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1000)
-    return () => clearTimeout(timer)
-  }, [])
+    const loadWorks = async () => {
+      try {
+        const accessToken = await getAccessToken()
+        if (!accessToken) {
+          toast.error('Failed to get access token')
+          return
+        }
 
-  const handleDistributeRoyalties = (workId: string) => {
-    // TODO: Navigate to distribution page
-    console.log(`Distributing royalties for work ${workId}`)
-    toast.success(`Royalty distribution initiated for work ${workId}`)
+        const response = await apiClient.getWorks(accessToken)
+        setWorks(response.works || [])
+      } catch (error) {
+        console.error('Failed to load works:', error)
+        toast.error('Failed to load works')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadWorks()
+  }, [getAccessToken])
+
+  const handleDistributeRoyalties = async (workId: string) => {
+    try {
+      const accessToken = await getAccessToken()
+      if (!accessToken) {
+        toast.error('Failed to get access token')
+        return
+      }
+
+      // Mock amount for demonstration - in production this would come from a form
+      const amount = 1.0 // 1 SOL
+
+      const response = await apiClient.distributeRoyalties(workId, amount, accessToken)
+      
+      if (response.success) {
+        toast.success(`Royalty distribution initiated for work ${workId}`)
+        console.log('Distribution result:', response.distribution)
+      }
+    } catch (error) {
+      console.error('Failed to distribute royalties:', error)
+      toast.error('Failed to distribute royalties')
+    }
   }
 
   if (isLoading) {
@@ -91,6 +113,16 @@ export default function DashboardPage() {
     )
   }
 
+  // Calculate stats
+  const totalRoyalties = works.reduce((sum) => {
+    // Mock royalty calculation - in production this would come from blockchain data
+    return sum + (Math.random() * 5) // Random amount for demo
+  }, 0)
+
+  const activeContributors = new Set(
+    works.flatMap(work => work.contributors.map(c => c.wallet))
+  ).size
+
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -99,7 +131,7 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-4xl font-bold">IP Dashboard</h1>
             <p className="text-muted-foreground mt-2">
-              Manage your registered intellectual property and royalty distributions
+              Welcome {userEmail || user?.id} - Manage your registered intellectual property and royalty distributions
             </p>
           </div>
           <Link href="/register-work">
@@ -116,7 +148,7 @@ export default function DashboardPage() {
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Total Registered Works
               </CardTitle>
-              <div className="text-3xl font-bold">{mockRegisteredWorks.length}</div>
+              <div className="text-3xl font-bold">{works.length}</div>
             </CardHeader>
           </Card>
           <Card className="glass">
@@ -125,7 +157,7 @@ export default function DashboardPage() {
                 Total Royalties (SOL)
               </CardTitle>
               <div className="text-3xl font-bold">
-                {mockRegisteredWorks.reduce((sum, work) => sum + work.totalRoyalties, 0).toFixed(1)}
+                {totalRoyalties.toFixed(1)}
               </div>
             </CardHeader>
           </Card>
@@ -135,7 +167,7 @@ export default function DashboardPage() {
                 Active Contributors
               </CardTitle>
               <div className="text-3xl font-bold">
-                {new Set(mockRegisteredWorks.flatMap(work => work.contributors.map(c => c.wallet))).size}
+                {activeContributors}
               </div>
             </CardHeader>
           </Card>
@@ -150,77 +182,100 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>ISRC</TableHead>
-                  <TableHead>Contributors</TableHead>
-                  <TableHead>Royalties (SOL)</TableHead>
-                  <TableHead>Last Distribution</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mockRegisteredWorks.map((work) => (
-                  <TableRow key={work.id}>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="font-medium">{work.title}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {work.mintAddress}
+            {works.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground mb-4">No works registered yet</p>
+                <Link href="/register-work">
+                  <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
+                    Register Your First Work
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>ISRC</TableHead>
+                    <TableHead>Contributors</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {works.map((work) => (
+                    <TableRow key={work.id}>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <div className="font-medium">{work.title}</div>
+                          {work.metadataUri && (
+                            <div className="text-xs text-muted-foreground">
+                              Metadata: {work.metadataUri.substring(0, 30)}...
+                            </div>
+                          )}
                         </div>
+                      </TableCell>
+                      <TableCell>{work.isrc || 'N/A'}</TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          {work.contributors.map((contributor, index) => (
+                            <div key={index} className="text-sm">
+                              <span className="font-medium">{contributor.name}</span>
+                              <Badge variant="secondary" className="ml-2 text-xs">
+                                {contributor.share}%
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </TableCell>
+                      <TableCell>
                         <Badge variant="outline" className="text-xs">
                           {work.status}
                         </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell>{work.isrc}</TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        {work.contributors.map((contributor, index) => (
-                          <div key={index} className="text-sm">
-                            <span className="font-medium">{contributor.name}</span>
-                            <Badge variant="secondary" className="ml-2 text-xs">
-                              {contributor.share}%
-                            </Badge>
-                          </div>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="font-bold">{work.totalRoyalties} SOL</div>
-                    </TableCell>
-                    <TableCell>{work.lastDistribution}</TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Link href={`/works/${work.id}`}>
-                          <Button variant="outline" size="sm">
-                            View Details
+                      </TableCell>
+                      <TableCell>
+                        {new Date(work.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Link href={`/works/${work.id}`}>
+                            <Button variant="outline" size="sm">
+                              View Details
+                            </Button>
+                          </Link>
+                          <Button
+                            size="sm"
+                            onClick={() => handleDistributeRoyalties(work.id)}
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                          >
+                            Distribute
                           </Button>
-                        </Link>
-                        <Button
-                          size="sm"
-                          onClick={() => handleDistributeRoyalties(work.id)}
-                          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                        >
-                          Distribute
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
 
         {/* Development Notice */}
         <div className="text-center text-sm text-muted-foreground glass rounded-lg p-4">
-          <p>🚧 Development Mode - Mock data shown</p>
-          <p>Real blockchain integration will be implemented in upcoming weeks</p>
+          <p>✅ Privy Authentication Integrated</p>
+          <p>✅ Server-side API Connected</p>
+          <p>🚧 Blockchain operations will be implemented in upcoming phases</p>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <AuthGuard>
+      <DashboardContent />
+    </AuthGuard>
   )
 } 
