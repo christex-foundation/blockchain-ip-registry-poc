@@ -2,75 +2,95 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { Progress } from '@/components/ui/progress'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { usePrivy } from '@privy-io/react-auth'
+import { Calendar, DollarSign, Users, Shield, Copy, ExternalLink, Info, TrendingUp, Activity, Loader2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
-// Mock data - will be replaced with real data from blockchain/database
-const mockWorkData = {
-  '1': {
-    id: '1',
-    title: 'Midnight Dreams',
-    isrc: 'USUM71234567',
-    mintAddress: 'ABC123def456GHI789jkl012MNO345pqr678STU901vwx234YZ',
-    description: 'A dreamy electronic track with ambient soundscapes',
-    registrationDate: '2024-01-10',
-    contributors: [
-      { name: 'Artist One', wallet: '9WzDXwBbTzgTHzgTXzgTHzgTXzgTHzgTXzgTHzgT', share: 60 },
-      { name: 'Producer Two', wallet: '5KjHgTfRdSeWqAzVmMuTmmkHGgGhVaaCBWRBLZcfSens', share: 40 },
-    ],
-    totalRoyalties: 2.5,
-    lastDistribution: '2024-01-15',
-    status: 'active',
-    metadata: {
-      name: 'Midnight Dreams',
-      symbol: 'IPOC',
-      description: 'IP OnChain registration for Midnight Dreams',
-      image: 'https://example.com/artwork.jpg',
-      attributes: [
-        { trait_type: 'ISRC', value: 'USUM71234567' },
-        { trait_type: 'Genre', value: 'Electronic' },
-        { trait_type: 'Duration', value: '3:45' },
-        { trait_type: 'Contributors', value: 2 },
-        { trait_type: 'Registration Date', value: '2024-01-10' }
-      ]
-    },
-    distributionHistory: [
-      { date: '2024-01-15', amount: 1.2, txHash: 'tx123...abc', status: 'completed' },
-      { date: '2024-01-01', amount: 0.8, txHash: 'tx456...def', status: 'completed' },
-      { date: '2023-12-15', amount: 0.5, txHash: 'tx789...ghi', status: 'completed' },
-    ]
-  }
+interface Contributor {
+  id: string
+  name: string
+  walletAddress: string
+  share: number
+}
+
+interface Work {
+  id: string
+  title: string
+  isrc: string
+  contributors: Contributor[]
+  metadataUri: string | null
+  mintAddress: string | null
+  createdAt: string
+  updatedAt: string
+  status: 'minted' | 'pending'
+  totalShares: number
+  organizationId: string | null
+  createdByUserId: string | null
 }
 
 export default function WorkDetailsPage() {
   const params = useParams()
+  const { getAccessToken } = usePrivy()
   const workId = params.id as string
-  const work = mockWorkData[workId as keyof typeof mockWorkData]
+  
+  const [work, setWork] = useState<Work | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  if (!work) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <Card className="glass p-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">Work Not Found</h1>
-          <p className="text-muted-foreground mb-6">
-            The requested work could not be found.
-          </p>
-          <Link href="/dashboard">
-            <Button>Back to Dashboard</Button>
-          </Link>
-        </Card>
-      </div>
-    )
-  }
+  useEffect(() => {
+    const fetchWork = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        const accessToken = await getAccessToken()
+        if (!accessToken) {
+          throw new Error('No access token available')
+        }
+
+        const response = await fetch(`/api/works/${workId}`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        })
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('Work not found')
+          }
+          throw new Error('Failed to fetch work')
+        }
+
+        const data = await response.json()
+        if (data.success && data.work) {
+          setWork(data.work)
+        } else {
+          throw new Error('Invalid response format')
+        }
+      } catch (err) {
+        console.error('Error fetching work:', err)
+        setError(err instanceof Error ? err.message : 'An unknown error occurred')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (workId) {
+      fetchWork()
+    }
+  }, [workId, getAccessToken])
 
   const handleDistributeRoyalties = () => {
-    // TODO: Navigate to distribution page or open distribution modal
-    console.log(`Distributing royalties for work ${workId}`)
+    toast.info('Royalty distribution feature coming soon!')
   }
 
   const copyToClipboard = (text: string) => {
@@ -78,212 +98,287 @@ export default function WorkDetailsPage() {
     toast.success('Copied to clipboard!')
   }
 
-  return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold">{work.title}</h1>
-            <p className="text-muted-foreground mt-2">
-              ISRC: {work.isrc} • Registered: {work.registrationDate}
-            </p>
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-white to-gray-50">
+        <Card className="shadow-medium border border-gray-200 p-8 text-center bg-white">
+          <Loader2 className="w-8 h-8 mx-auto mb-4 animate-spin text-[#7073d1]" />
+          <h1 className="text-2xl font-bold mb-4 text-[#202020] font-futura">Loading Work</h1>
+          <p className="text-gray-600 font-space-grotesk">
+            Fetching work details...
+          </p>
+        </Card>
+      </div>
+    )
+  }
+
+  if (error || !work) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-white to-gray-50">
+        <Card className="shadow-medium border border-gray-200 p-8 text-center bg-white">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+            <Shield className="w-8 h-8 text-gray-400" />
           </div>
-          <div className="flex space-x-4">
-            <Link href="/dashboard">
-              <Button variant="outline">
-                Back to Dashboard
-              </Button>
-            </Link>
-            <Button
-              onClick={handleDistributeRoyalties}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white glow"
-            >
-              Distribute Royalties
+          <h1 className="text-2xl font-bold mb-4 text-[#202020] font-futura">
+            {error === 'Work not found' ? 'Work Not Found' : 'Error Loading Work'}
+          </h1>
+          <p className="text-gray-600 mb-6 font-space-grotesk">
+            {error || 'The requested work could not be found.'}
+          </p>
+          <Link href="/dashboard">
+            <Button className="bg-[#7073d1] hover:bg-[#5a5db8] text-white shadow-soft font-space-grotesk">
+              Back to Dashboard
             </Button>
+          </Link>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
+        {/* Header */}
+        <div className="bg-white shadow-soft rounded-xl border border-gray-200 p-8">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-[#dcddff] flex items-center justify-center">
+                  <Shield className="w-6 h-6 text-[#7073d1]" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-[#202020] font-futura">{work.title}</h1>
+                  <div className="flex items-center gap-4 mt-2 text-gray-600 font-space-grotesk">
+                    <span className="flex items-center gap-1">
+                      <Info className="w-4 h-4" />
+                      ISRC: {work.isrc}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      Registered: {formatDate(work.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Quick Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="bg-gradient-to-r from-[#7073d1] to-[#8b8dd6] rounded-lg p-4 text-white">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-white/80 text-sm font-space-grotesk">Status</p>
+                      <p className="text-2xl font-bold font-futura capitalize">{work.status}</p>
+                    </div>
+                    <Shield className="w-8 h-8 text-white/80" />
+                  </div>
+                </div>
+                
+                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-soft">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-600 text-sm font-space-grotesk">Contributors</p>
+                      <p className="text-2xl font-bold text-[#202020] font-futura">{work.contributors.length}</p>
+                    </div>
+                    <Users className="w-8 h-8 text-[#7073d1]" />
+                  </div>
+                </div>
+                
+                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-soft">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-600 text-sm font-space-grotesk">Total Shares</p>
+                      <p className="text-2xl font-bold text-[#202020] font-futura">{work.totalShares}%</p>
+                    </div>
+                    <Activity className="w-8 h-8 text-[#7073d1]" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-3 ml-8">
+              <Link href="/dashboard">
+                <Button 
+                  variant="outline" 
+                  className="border-gray-300 hover:bg-gray-50 font-space-grotesk"
+                >
+                  Back to Dashboard
+                </Button>
+              </Link>
+              <Button
+                onClick={handleDistributeRoyalties}
+                className="bg-[#7073d1] hover:bg-[#5a5db8] text-white shadow-medium font-space-grotesk"
+              >
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Distribute Royalties
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-8 space-y-8">
             {/* Work Information */}
-            <Card className="glass">
-              <CardHeader>
-                <CardTitle>Work Information</CardTitle>
+            <Card className="bg-white shadow-medium border border-gray-200 overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-[#dcddff] to-[#f8f9ff] border-b border-gray-200">
+                <CardTitle className="text-xl font-bold text-[#202020] font-futura flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-[#7073d1]" />
+                  Work Information
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Title</label>
-                    <p className="font-medium">{work.title}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">ISRC</label>
-                    <p className="font-medium">{work.isrc}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Status</label>
-                    <div className="mt-1">
-                      <Badge variant="default">{work.status}</Badge>
+              <CardContent className="p-6">
+                {/* Info Grid */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                  <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="w-12 h-12 mx-auto mb-3 bg-[#dcddff] rounded-full flex items-center justify-center">
+                      <Info className="w-6 h-6 text-[#7073d1]" />
                     </div>
+                    <label className="text-xs font-medium text-gray-600 uppercase tracking-wide font-space-grotesk">Title</label>
+                    <p className="font-bold text-[#202020] mt-1 font-futura">{work.title}</p>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Registration Date</label>
-                    <p className="font-medium">{work.registrationDate}</p>
+                  
+                  <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="w-12 h-12 mx-auto mb-3 bg-[#dcddff] rounded-full flex items-center justify-center">
+                      <Shield className="w-6 h-6 text-[#7073d1]" />
+                    </div>
+                    <label className="text-xs font-medium text-gray-600 uppercase tracking-wide font-space-grotesk">ISRC</label>
+                    <p className="font-bold text-[#202020] mt-1 font-mono text-sm">{work.isrc}</p>
+                  </div>
+                  
+                  <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="w-12 h-12 mx-auto mb-3 bg-green-100 rounded-full flex items-center justify-center">
+                      <Activity className="w-6 h-6 text-green-600" />
+                    </div>
+                    <label className="text-xs font-medium text-gray-600 uppercase tracking-wide font-space-grotesk">Status</label>
+                    <Badge className="mt-1 bg-green-100 text-green-800 hover:bg-green-100 font-space-grotesk">
+                      {work.status}
+                    </Badge>
+                  </div>
+                  
+                  <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="w-12 h-12 mx-auto mb-3 bg-[#dcddff] rounded-full flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-[#7073d1]" />
+                    </div>
+                    <label className="text-xs font-medium text-gray-600 uppercase tracking-wide font-space-grotesk">Registration</label>
+                    <p className="font-bold text-[#202020] mt-1 font-futura text-sm">{formatDate(work.createdAt)}</p>
                   </div>
                 </div>
-                <Separator className="my-4" />
                 
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">NFT Mint Address</label>
-                  <div className="flex items-center space-x-2 mt-1">
+                {/* NFT Address Section */}
+                {work.mintAddress && (
+                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="text-sm font-medium text-gray-700 font-space-grotesk flex items-center gap-2">
+                        <ExternalLink className="w-4 h-4" />
+                        NFT Mint Address
+                      </label>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyToClipboard(work.mintAddress!)}
+                        className="text-xs font-space-grotesk"
+                      >
+                        <Copy className="w-3 h-3 mr-1" />
+                        Copy
+                      </Button>
+                    </div>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <code className="text-xs bg-secondary/20 px-2 py-1 rounded font-mono cursor-pointer hover:bg-secondary/30">
-                            {work.mintAddress.slice(0, 12)}...{work.mintAddress.slice(-12)}
+                          <code className="text-xs bg-white px-3 py-2 rounded border border-gray-300 font-mono cursor-pointer hover:bg-gray-50 block">
+                            {work.mintAddress}
                           </code>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p className="font-mono text-xs">{work.mintAddress}</p>
+                          <p className="font-mono text-xs">Click to view full address</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => copyToClipboard(work.mintAddress)}
-                    >
-                      Copy
-                    </Button>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 
             {/* Contributors */}
-            <Card className="glass">
-              <CardHeader>
-                <CardTitle>Contributors & Royalty Shares</CardTitle>
-                <CardDescription>
+            <Card className="bg-white shadow-medium border border-gray-200 overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-[#dcddff] to-[#f8f9ff] border-b border-gray-200">
+                <CardTitle className="text-xl font-bold text-[#202020] font-futura flex items-center gap-2">
+                  <Users className="w-5 h-5 text-[#7073d1]" />
+                  Contributors & Royalty Shares
+                </CardTitle>
+                <CardDescription className="text-gray-600 font-space-grotesk">
                   Registered contributors and their ownership percentages
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Wallet Address</TableHead>
-                      <TableHead>Share</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {work.contributors.map((contributor, index) => (
+                    <div key={contributor.id} className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-[#dcddff] rounded-full flex items-center justify-center">
+                            <Users className="w-5 h-5 text-[#7073d1]" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-[#202020] font-futura">{contributor.name}</h3>
+                            <HoverCard>
+                              <HoverCardTrigger asChild>
+                                <code className="text-xs bg-white px-2 py-1 rounded border border-gray-300 font-mono cursor-pointer hover:bg-gray-50">
+                                  {contributor.walletAddress.slice(0, 8)}...{contributor.walletAddress.slice(-8)}
+                                </code>
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80">
+                                <div className="space-y-2">
+                                  <h4 className="font-semibold text-[#202020] font-futura">Full Wallet Address</h4>
+                                  <code className="text-xs bg-gray-100 p-2 rounded block font-mono break-all">
+                                    {contributor.walletAddress}
+                                  </code>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => copyToClipboard(contributor.walletAddress)}
+                                    className="w-full bg-[#7073d1] hover:bg-[#5a5db8] text-white font-space-grotesk"
+                                  >
+                                    <Copy className="w-3 h-3 mr-1" />
+                                    Copy Address
+                                  </Button>
+                                </div>
+                              </HoverCardContent>
+                            </HoverCard>
+                          </div>
+                        </div>
+                        
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-white rounded-full border-4 border-[#7073d1] flex items-center justify-center mb-2">
+                            <span className="text-lg font-bold text-[#7073d1] font-futura">{contributor.share}%</span>
+                          </div>
+                          <Progress value={contributor.share} className="w-20 h-2" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Ownership Distribution */}
+                <div className="mt-6 p-4 bg-gradient-to-r from-[#f8f9ff] to-[#dcddff] rounded-lg border border-gray-200">
+                  <h4 className="text-sm font-bold text-[#202020] mb-3 font-futura">Ownership Distribution</h4>
+                  <div className="flex items-center justify-center gap-4 flex-wrap">
                     {work.contributors.map((contributor, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{contributor.name}</TableCell>
-                        <TableCell>
-                          <code className="text-xs bg-secondary/20 px-2 py-1 rounded font-mono">
-                            {contributor.wallet.slice(0, 8)}...{contributor.wallet.slice(-8)}
-                          </code>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="font-bold">
-                            {contributor.share}%
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-
-            {/* Distribution History */}
-            <Card className="glass">
-              <CardHeader>
-                <CardTitle>Royalty Distribution History</CardTitle>
-                <CardDescription>
-                  Past royalty distributions to contributors
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Amount (SOL)</TableHead>
-                      <TableHead>Transaction</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {work.distributionHistory.map((distribution, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{distribution.date}</TableCell>
-                        <TableCell className="font-bold">{distribution.amount} SOL</TableCell>
-                        <TableCell>
-                          <code className="text-xs bg-secondary/20 px-2 py-1 rounded font-mono">
-                            {distribution.txHash}
-                          </code>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="default">
-                            {distribution.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Stats */}
-            <Card className="glass">
-              <CardHeader>
-                <CardTitle className="text-lg">Statistics</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">{work.totalRoyalties} SOL</div>
-                  <p className="text-sm text-muted-foreground">Total Royalties</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold">{work.contributors.length}</div>
-                  <p className="text-sm text-muted-foreground">Contributors</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold">{work.distributionHistory.length}</div>
-                  <p className="text-sm text-muted-foreground">Distributions</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* NFT Metadata */}
-            <Card className="glass">
-              <CardHeader>
-                <CardTitle className="text-lg">NFT Metadata</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Name</label>
-                  <p className="text-sm">{work.metadata.name}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Symbol</label>
-                  <p className="text-sm">{work.metadata.symbol}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Attributes</label>
-                  <div className="space-y-1">
-                    {work.metadata.attributes.map((attr, index) => (
-                      <div key={index} className="text-xs bg-secondary/10 px-2 py-1 rounded">
-                        <span className="font-medium">{attr.trait_type}:</span> {attr.value}
+                      <div key={contributor.id} className="flex items-center gap-2">
+                        <div 
+                          className="w-4 h-4 rounded-full" 
+                          style={{ backgroundColor: index === 0 ? '#7073d1' : '#dcddff' }}
+                        />
+                        <span className="text-sm font-medium text-[#202020] font-space-grotesk">
+                          {contributor.name}: {contributor.share}%
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -291,14 +386,73 @@ export default function WorkDetailsPage() {
               </CardContent>
             </Card>
           </div>
-        </div>
 
-        {/* Development Notice */}
-        <div className="text-center text-sm text-muted-foreground glass rounded-lg p-4">
-          <p>🚧 Development Mode - Mock data shown</p>
-          <p>Real blockchain data and transaction history will be implemented in upcoming weeks</p>
+          {/* Sidebar */}
+          <div className="lg:col-span-4 space-y-6">
+            {/* Quick Actions */}
+            <Card className="bg-white shadow-medium border border-gray-200">
+              <CardHeader className="bg-gradient-to-r from-[#dcddff] to-[#f8f9ff] border-b border-gray-200">
+                <CardTitle className="text-lg font-bold text-[#202020] font-futura">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <Button 
+                  onClick={handleDistributeRoyalties}
+                  className="w-full bg-[#7073d1] hover:bg-[#5a5db8] text-white shadow-soft font-space-grotesk"
+                >
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Distribute Royalties
+                </Button>
+                
+                {work.mintAddress && (
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-gray-300 hover:bg-gray-50 font-space-grotesk"
+                    onClick={() => window.open(`https://solscan.io/token/${work.mintAddress}`, '_blank')}
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    View on Solscan
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Blockchain Info */}
+            <Card className="bg-white shadow-medium border border-gray-200">
+              <CardHeader className="bg-gradient-to-r from-[#dcddff] to-[#f8f9ff] border-b border-gray-200">
+                <CardTitle className="text-lg font-bold text-[#202020] font-futura flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-[#7073d1]" />
+                  Blockchain Info
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div>
+                  <label className="text-xs font-medium text-gray-600 uppercase tracking-wide font-space-grotesk">Network</label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-[#202020] font-space-grotesk">Solana</span>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-xs font-medium text-gray-600 uppercase tracking-wide font-space-grotesk">Token Standard</label>
+                  <p className="text-sm font-medium text-[#202020] font-space-grotesk">Metaplex Core</p>
+                </div>
+                
+                <div>
+                  <label className="text-xs font-medium text-gray-600 uppercase tracking-wide font-space-grotesk">Status</label>
+                  <Badge className={`mt-1 font-space-grotesk ${
+                    work.status === 'minted' 
+                      ? 'bg-green-100 text-green-800 hover:bg-green-100' 
+                      : 'bg-amber-100 text-amber-800 hover:bg-amber-100'
+                  }`}>
+                    {work.status === 'minted' ? 'Minted' : 'Pending'}
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
   )
-} 
+}
