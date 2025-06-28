@@ -16,28 +16,34 @@ npm run dev
 # Build application  
 npm run build
 
-# Run all tests
+# Run all tests (watch mode by default)
 npm test
 
 # Run single test file
 npm test -- src/path/to/test.ts
 
-# Run tests in watch mode (default)
-npm test
-
-# Run tests once (CI mode)
-npm run test:run
-
 # Linting and formatting
 npm run lint
 npm run format
 npm run format:check
+
+# Testing commands
+npm test              # Run tests in watch mode (default)
+npm run test:run      # Run tests once (CI mode)
+npm run test:ui       # Run tests with UI
+npm run test:coverage # Run tests with coverage report
+
+# Build and CI
+npm run ci            # Full CI pipeline: build, lint, format check, codama
 ```
 
 ### Anchor/Solana Commands
 ```bash
 # Setup new program keypair and sync IDs
 npm run setup
+
+# Generate client code from IDL
+npm run anchor-client
 
 # Build Solana program
 npm run anchor-build
@@ -47,6 +53,9 @@ npm run anchor-localnet
 
 # Run Anchor tests
 npm run anchor-test
+
+# Generate JavaScript client using Codama
+npm run codama:js
 
 # Deploy to devnet
 npm run anchor deploy --provider.cluster devnet
@@ -176,11 +185,15 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 # Privy Authentication  
 NEXT_PUBLIC_PRIVY_APP_ID=
-PRIVY_APP_SECRET=
+NEXT_PRIVATE_PRIVY_APP_SECRET=
 
 # Solana
 SERVER_WALLET_PRIVATE_KEY=
+SOLANA_RPC_URL=
 NEXT_PUBLIC_SOLANA_RPC_URL=
+
+# Application Configuration
+NEXT_PUBLIC_APP_URL=
 ```
 
 ## Common Debugging Patterns
