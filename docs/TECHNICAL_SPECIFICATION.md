@@ -49,12 +49,12 @@ The platform uses Privy for user authentication and wallet management, with wall
 
 ```typescript
 const {
-  ready,           // Privy initialization status
-  authenticated,   // User authentication status
-  user,           // User object
+  ready, // Privy initialization status
+  authenticated, // User authentication status
+  user, // User object
   getAccessToken, // JWT token for API calls
-  userEmail,      // User's email address
-  userId,         // User's unique ID
+  userEmail, // User's email address
+  userId, // User's unique ID
 } = usePrivyAuth()
 ```
 
@@ -128,12 +128,14 @@ The platform implements dual storage for NFT metadata, storing data both on-chai
 #### Storage Methods
 
 **1. On-Chain Storage (Metaplex Core Attributes)**
+
 - **Technology**: Metaplex Core NFT with Attributes Plugin
 - **Data Format**: Key-value pairs stored directly on Solana blockchain
 - **Benefits**: Immutable, decentralized, always accessible
 - **Limitations**: Storage costs, limited data size, string-only values
 
 **2. Off-Chain Storage (Supabase Database)**
+
 - **Technology**: PostgreSQL database via Supabase
 - **Data Format**: Structured relational data with full metadata
 - **Benefits**: Rich queries, complex data types, cost-effective
@@ -212,12 +214,12 @@ interface OffChainMetadata {
 // Located in: src/lib/solana-server.ts
 export function createUmiInstance(): Umi {
   const umi = createUmi(SOLANA_RPC_URL).use(mplCore())
-  
+
   if (SERVER_KEYPAIR) {
     const umiKeypair = fromWeb3JsKeypair(SERVER_KEYPAIR)
     umi.use(keypairIdentity(umiKeypair))
   }
-  
+
   return umi
 }
 ```
@@ -288,6 +290,7 @@ The platform uses Supabase as the off-chain data storage solution, providing a r
 #### Database Tables
 
 **Users Table**
+
 ```sql
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -299,6 +302,7 @@ CREATE TABLE users (
 ```
 
 **Works Table**
+
 ```sql
 CREATE TABLE works (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -315,6 +319,7 @@ CREATE TABLE works (
 ```
 
 **Organizations Table**
+
 ```sql
 CREATE TABLE organizations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -326,6 +331,7 @@ CREATE TABLE organizations (
 ```
 
 **Organization Members Table**
+
 ```sql
 CREATE TABLE organization_members (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -338,6 +344,7 @@ CREATE TABLE organization_members (
 ```
 
 **Contributors Table**
+
 ```sql
 CREATE TABLE contributors (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -350,6 +357,7 @@ CREATE TABLE contributors (
 ```
 
 **Usage Events Table**
+
 ```sql
 CREATE TABLE usage_events (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -366,6 +374,7 @@ CREATE TABLE usage_events (
 ```
 
 **Royalty Earnings Table**
+
 ```sql
 CREATE TABLE royalty_earnings (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -383,23 +392,27 @@ CREATE TABLE royalty_earnings (
 Located in `src/lib/repositories/`, each repository follows consistent patterns:
 
 **UserRepository**
+
 - Manages Privy user ID to database UUID mapping
 - Handles user upserts during authentication
 - Critical for all user-related operations across the application
 
 **OrganizationRepository**
+
 - Handles user ID conversion from Privy to database UUIDs
 - Manages role-based permissions (owner/admin/member)
 - Creates on-chain collections via Metaplex Core
 - Critical methods: `findUserOrganizations()`, `isMember()`, `hasPermission()`
 
 **WorkRepository**
+
 - Manages IP work registration with contributors
 - Links works to organizations when applicable
 - Handles ISRC validation and uniqueness
 - Updates NFT mint addresses after on-chain creation
 
 **ContributorRepository**
+
 - Contributor management per work
 - Royalty share validation (must total 100%)
 - Bulk contributor creation
@@ -502,17 +515,20 @@ The royalty system simulates real-world music industry revenue streams by tracki
 #### Revenue Stream Categories
 
 **1. Performance Royalties (60% of events)**
+
 - **Sources**: Streaming platforms, radio stations
 - **Streaming**: Spotify, Apple Music, YouTube Music, Tidal, Deezer
 - **Radio**: FM radio, internet radio, satellite radio
 - **Revenue Rates**: Streaming: $0.001-$0.003 per stream, Radio: $0.01-$0.03 per play
 
 **2. Mechanical Royalties (20% of events)**
+
 - **Sources**: Digital downloads, physical sales
 - **Platforms**: iTunes, Amazon Music, Bandcamp, Beatport
 - **Revenue Rates**: Downloads: $0.50-$1.00 per unit
 
 **3. Synchronization Royalties (5% of events)**
+
 - **Sources**: Commercial usage in media
 - **Types**: TV commercials, film soundtracks, YouTube content, podcasts
 - **Revenue Rates**: Sync deals: $50-$250 per placement
@@ -525,7 +541,7 @@ const earnings = {
   performance: sum(streams + radio_plays) * respective_rates,
   mechanical: sum(downloads) * download_rates,
   sync: sum(sync_deals) * sync_rates,
-  total: performance + mechanical + sync
+  total: performance + mechanical + sync,
 }
 
 // Per contributor
@@ -535,6 +551,7 @@ const contributorEarnings = (totalEarnings * contributorShare) / 100
 #### Mock Data Simulation
 
 The mock data generator simulates realistic usage reporting with:
+
 - **Time Period**: 30 days of historical data
 - **Event Frequency**: ~8 events per day per work
 - **Platform Distribution**: Weighted realistic distribution
@@ -562,12 +579,14 @@ The testing strategy focuses on testing critical functionality without aiming fo
 **Location**: `src/lib/__tests__/`
 
 **Utility Functions** (`utils.test.ts`):
+
 - **validateISRC**: Comprehensive ISRC format validation with edge cases
 - **validateRoyaltyShares**: Ensures contributor shares total exactly 100%
 - **validateWalletAddress**: Solana wallet address validation with security checks
 - **Security Testing**: Malicious input validation (XSS, SQL injection, unicode)
 
 **Repository Layer**:
+
 - **WorkRepository**: Work creation, ISRC uniqueness, NFT mint address updates
 - **ContributorRepository**: Multiple contributor creation, royalty share validation
 - **OrganizationRepository**: User ID conversion, role-based permissions
@@ -575,10 +594,12 @@ The testing strategy focuses on testing critical functionality without aiming fo
 #### 2. Integration Tests
 
 **API Client** (`api-client.test.ts`):
+
 - Tests the real ApiClient class from `src/lib/api-client.ts`
 - Constructor behavior, authentication, work registration, error handling
 
 **Workflow Integration** (`integration.test.ts`):
+
 - Cross-component workflows
 - Work registration workflow
 - Royalty distribution workflow
@@ -587,6 +608,7 @@ The testing strategy focuses on testing critical functionality without aiming fo
 #### 3. Organization Feature Testing
 
 **Repository Layer Tests**:
+
 ```typescript
 describe('OrganizationRepository', () => {
   it('should convert Privy user IDs to database UUIDs')
@@ -597,6 +619,7 @@ describe('OrganizationRepository', () => {
 ```
 
 **API Endpoint Tests**:
+
 ```typescript
 describe('/api/organizations', () => {
   it('should require authentication for all operations')
@@ -609,6 +632,7 @@ describe('/api/organizations', () => {
 #### 4. Dual Storage Testing
 
 **On-Chain Attribute Tests**:
+
 ```typescript
 describe('createOnChainAttributes', () => {
   it('should create proper attributes from work and contributors')
@@ -618,6 +642,7 @@ describe('createOnChainAttributes', () => {
 ```
 
 **Consistency Tests**:
+
 ```typescript
 describe('Dual Storage Consistency', () => {
   it('should maintain data consistency between on-chain and off-chain')
@@ -629,33 +654,17 @@ describe('Dual Storage Consistency', () => {
 ### Mock Strategy
 
 **Global Mocks** (`src/test/setup.ts`):
+
 - Next.js Router navigation mocking
 - Privy Authentication user state
 - Supabase Client database operations
 - Environment Variables test configuration
 
 **Test-Specific Mocks**:
+
 - HTTP Requests: Fetch API mocking for API client tests
 - External Services: IPFS, blockchain interactions
 - Database Responses: Controlled test data scenarios
-
-### Current Test Results
-
-```bash
-✅ Total Test Files: 14 passed
-✅ Total Tests: 152 passed
-
-Breakdown:
-✅ Utility Functions: 19/19 passing
-✅ API Client (Real Class): 12/12 passing
-✅ Integration Workflows: 6/6 passing
-✅ Repository Tests: 41/41 passing
-✅ Route Validation: 21/21 passing
-✅ Organization Integration: 7/7 passing
-✅ Property-based Tests: 14/14 passing
-
-Overall Success Rate: 100% (152/152)
-```
 
 ---
 
@@ -664,6 +673,7 @@ Overall Success Rate: 100% (152/152)
 ### Authentication Flow
 
 All protected API routes follow this pattern:
+
 1. Extract Bearer token from Authorization header
 2. Verify with Privy server using `privyServer.verifyAuthToken()`
 3. Convert Privy user ID to database user with `UserRepository.findByPrivyUserId()`
@@ -676,28 +686,27 @@ All protected API routes follow this pattern:
 const isMember = await OrganizationRepository.isMember(orgId, privyUserId)
 
 // Check specific permissions
-const hasPermission = await OrganizationRepository.hasPermission(
-  orgId, 
-  privyUserId, 
-  ['owner', 'admin']
-)
+const hasPermission = await OrganizationRepository.hasPermission(orgId, privyUserId, ['owner', 'admin'])
 ```
 
 ### Key API Endpoints
 
 #### Work Management
+
 - `POST /api/works/register` - Register new IP work with contributors
 - `GET /api/works/list` - List all works for authenticated user
 - `GET /api/works/[id]` - Get specific work details
 - `GET /api/metadata/[workId]` - Get NFT metadata with dual storage
 
 #### Organization Management
+
 - `GET /api/organizations` - List user's organizations
 - `POST /api/organizations` - Create new organization
 - `GET /api/organizations/[id]` - Get organization details
 - `POST /api/organizations/[id]/members` - Add organization member
 
 #### Royalty Management
+
 - `POST /api/royalties/calculate` - Calculate royalties for works
 - `POST /api/royalties/distribute` - Distribute royalties to contributors
 - `GET /api/royalties/earnings` - Get earnings data
@@ -718,7 +727,7 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 
-# Privy Authentication  
+# Privy Authentication
 NEXT_PUBLIC_PRIVY_APP_ID=
 NEXT_PRIVATE_PRIVY_APP_SECRET=
 
@@ -734,11 +743,13 @@ NEXT_PUBLIC_APP_URL=
 ### Solana Integration
 
 #### Metaplex Core Operations
+
 - **Collections**: Represent organizations with attributes for membership
 - **Assets**: Individual IP works, optionally part of organization collections
 - **Attributes Plugin**: Stores metadata on-chain for both collections and assets
 
 #### Server Wallet Management
+
 - All on-chain operations use server-managed wallet (`SERVER_WALLET_PRIVATE_KEY`)
 - Eliminates complex key management for users
 - Membership tracked via collection attributes rather than separate accounts
@@ -746,17 +757,21 @@ NEXT_PUBLIC_APP_URL=
 ### Common Debugging Patterns
 
 #### User ID Issues
+
 If seeing "invalid input syntax for type uuid" errors:
+
 - Check that Privy user ID conversion is happening in repository methods
 - Ensure `UserRepository.findByPrivyUserId()` is called before database operations
 - Verify user exists in database before organization operations
 
 #### Organization Permission Issues
+
 - Use `OrganizationRepository.hasPermission()` for admin/owner checks
 - Check organization membership with `isMember()` before work registration
 - Ensure proper role validation in API endpoints
 
 #### Test Failures
+
 - Organization tests require proper user ID mocking patterns
 - Supabase mock chaining must return correct objects for method chaining
 - Use OrganizationBuilder with explicit null handling for collection addresses
@@ -764,16 +779,19 @@ If seeing "invalid input syntax for type uuid" errors:
 ### Performance Considerations
 
 #### Transaction Costs
+
 - **Asset Creation**: ~0.001-0.01 SOL per NFT
 - **Attribute Storage**: Minimal additional cost
 - **Collection Assets**: Similar to individual assets
 
 #### Network Efficiency
+
 - **Batch Operations**: Multiple attributes in single transaction
 - **Optimized RPC**: Configured for devnet/mainnet
 - **Confirmation Strategy**: 'confirmed' commitment level
 
 #### Caching Strategy
+
 - **Database Mirrors**: Full work data cached off-chain
 - **API Endpoints**: Fast metadata retrieval
 - **Asset Queries**: Cached collection membership
@@ -795,4 +813,4 @@ For detailed implementation specifics, see the archived documentation:
 
 ---
 
-*This technical specification serves as the single source of truth for the IP OnChain platform architecture. All implementation decisions should align with the patterns and principles documented here.*
+_This technical specification serves as the single source of truth for the IP OnChain platform architecture. All implementation decisions should align with the patterns and principles documented here._

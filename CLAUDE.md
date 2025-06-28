@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Process
+
+Every new change should be done in a new branch.
+Every new branch should be based on the main branch.
+Every new branch should be named after the feature or bug fix.
+Every new branch should be merged into the main branch after testing and approval.
+Every new branch should be deleted after merging into the main branch.
+
 ## Project Overview
 
 IP OnChain is a Next.js application for intellectual property management on Solana blockchain. It enables users to register musical works and other IP as NFTs, manage organizations (publishing companies/artist collectives), and distribute royalties. The architecture combines on-chain storage using Metaplex Core with off-chain Supabase database for optimal performance.
@@ -9,11 +17,12 @@ IP OnChain is a Next.js application for intellectual property management on Sola
 ## Development Commands
 
 ### Essential Commands
+
 ```bash
 # Development server with Turbopack
 npm run dev
 
-# Build application  
+# Build application
 npm run build
 
 # Run all tests (watch mode by default)
@@ -38,6 +47,7 @@ npm run ci            # Full CI pipeline: build, lint, format check, codama
 ```
 
 ### Anchor/Solana Commands
+
 ```bash
 # Setup new program keypair and sync IDs
 npm run setup
@@ -64,17 +74,20 @@ npm run anchor deploy --provider.cluster devnet
 ## Architecture Overview
 
 ### Hybrid Storage Architecture
+
 - **On-Chain**: Metaplex Core Collections and Assets with Attributes Plugin for metadata
 - **Off-Chain**: Supabase PostgreSQL for fast queries, caching, and complex relationships
 - **Synchronization**: Dual-write operations ensure data consistency between storage layers
 
 ### Key Data Models
+
 - **Users**: Privy authentication with embedded wallets
 - **Organizations**: Publishing companies/collectives with role-based membership (Owner/Admin/Member)
 - **Works**: IP registrations that can be individual or organization-owned
 - **Contributors**: Royalty share holders with wallet addresses
 
 ### Critical User ID Conversion Pattern
+
 The application uses a critical conversion pattern between Privy user IDs (`did:privy:...`) and database UUIDs:
 
 ```typescript
@@ -91,18 +104,21 @@ This pattern is essential for organizations, works, and any user-related operati
 Located in `src/lib/repositories/`, each repository follows consistent patterns:
 
 ### OrganizationRepository
+
 - Handles user ID conversion from Privy to database UUIDs
 - Manages role-based permissions (owner/admin/member)
 - Creates on-chain collections via Metaplex Core
 - Critical methods: `findUserOrganizations()`, `isMember()`, `hasPermission()`
 
-### WorkRepository  
+### WorkRepository
+
 - Manages IP work registration with contributors
 - Links works to organizations when applicable
 - Handles ISRC validation and uniqueness
 - Updates NFT mint addresses after on-chain creation
 
 ### UserRepository
+
 - Manages Privy user ID to database UUID mapping
 - Handles user upserts during authentication
 - Critical for all user-related operations across the application
@@ -110,12 +126,14 @@ Located in `src/lib/repositories/`, each repository follows consistent patterns:
 ## Testing Strategy
 
 ### Test Structure
+
 - **Unit Tests**: `src/lib/__tests__/` - utilities, repositories
 - **Integration Tests**: `src/lib/__tests__/organization-integration.test.ts` - cross-component workflows
 - **API Tests**: `src/app/api/*/route.test.ts` - endpoint behavior with auth
 - **Builders**: `src/test/builders/` - consistent test data generation
 
 ### Key Testing Patterns
+
 ```typescript
 // Use builders for consistent test data
 const org = OrganizationBuilder.create().withName('Test Org').build()
@@ -129,11 +147,12 @@ vi.mocked(UserRepository.findByPrivyUserId).mockResolvedValue(dbUser)
 ```
 
 ### Running Specific Tests
+
 ```bash
 # Organization tests
 npm test src/lib/repositories/__tests__/organization-repository.test.ts
 
-# Integration workflows  
+# Integration workflows
 npm test src/lib/__tests__/organization-integration.test.ts
 
 # API endpoint tests
@@ -143,33 +162,34 @@ npm test src/app/api/organizations/__tests__/route.test.ts
 ## API Route Patterns
 
 ### Authentication Flow
+
 All protected API routes follow this pattern:
+
 1. Extract Bearer token from Authorization header
 2. Verify with Privy server using `privyServer.verifyAuthToken()`
 3. Convert Privy user ID to database user with `UserRepository.findByPrivyUserId()`
 4. Proceed with business logic
 
 ### Organization Permission Checks
+
 ```typescript
 // Check organization membership
 const isMember = await OrganizationRepository.isMember(orgId, privyUserId)
 
 // Check specific permissions
-const hasPermission = await OrganizationRepository.hasPermission(
-  orgId, 
-  privyUserId, 
-  ['owner', 'admin']
-)
+const hasPermission = await OrganizationRepository.hasPermission(orgId, privyUserId, ['owner', 'admin'])
 ```
 
 ## Solana Integration
 
 ### Metaplex Core Operations
+
 - **Collections**: Represent organizations with attributes for membership
 - **Assets**: Individual IP works, optionally part of organization collections
 - **Attributes Plugin**: Stores metadata on-chain for both collections and assets
 
 ### Server Wallet Management
+
 - All on-chain operations use server-managed wallet (`SERVER_WALLET_PRIVATE_KEY`)
 - Eliminates complex key management for users
 - Membership tracked via collection attributes rather than separate accounts
@@ -177,13 +197,14 @@ const hasPermission = await OrganizationRepository.hasPermission(
 ## Environment Configuration
 
 ### Required Environment Variables
+
 ```bash
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 
-# Privy Authentication  
+# Privy Authentication
 NEXT_PUBLIC_PRIVY_APP_ID=
 NEXT_PRIVATE_PRIVY_APP_SECRET=
 
@@ -199,17 +220,21 @@ NEXT_PUBLIC_APP_URL=
 ## Common Debugging Patterns
 
 ### User ID Issues
+
 If seeing "invalid input syntax for type uuid" errors:
+
 - Check that Privy user ID conversion is happening in repository methods
 - Ensure `UserRepository.findByPrivyUserId()` is called before database operations
 - Verify user exists in database before organization operations
 
 ### Organization Permission Issues
+
 - Use `OrganizationRepository.hasPermission()` for admin/owner checks
 - Check organization membership with `isMember()` before work registration
 - Ensure proper role validation in API endpoints
 
 ### Test Failures
+
 - Organization tests require proper user ID mocking patterns
 - Supabase mock chaining must return correct objects for method chaining
 - Use OrganizationBuilder with explicit null handling for collection addresses
