@@ -26,7 +26,10 @@
       "Bash(npm config:*)",
       "Bash(rg:*)",
       "WebFetch(domain:docs.google.com)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint)"
     ],
     "deny": []
   }

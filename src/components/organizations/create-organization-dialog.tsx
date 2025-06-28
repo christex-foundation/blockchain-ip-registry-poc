@@ -113,15 +113,15 @@ export function CreateOrganizationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] shadow-strong border-0">
+      <DialogContent className="sm:max-w-[500px] shadow-strong border-0 bg-white">
         <DialogHeader className="space-y-3 pb-6">
-          <DialogTitle className="flex items-center gap-3 text-2xl">
-            <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-primary" />
+          <DialogTitle className="flex items-center gap-3 text-2xl text-[#202020]">
+            <div className="h-10 w-10 bg-[#dcddff] rounded-lg flex items-center justify-center">
+              <Building2 className="h-6 w-6 text-[#7073d1]" />
             </div>
             Create Organization
           </DialogTitle>
-          <DialogDescription className="content-secondary text-balance">
+          <DialogDescription className="text-gray-600 text-balance">
             Create a new organization with an on-chain collection for collaborative intellectual property management. This will establish your organization on the Solana blockchain.
           </DialogDescription>
         </DialogHeader>
@@ -134,16 +134,16 @@ export function CreateOrganizationDialog({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base font-medium">Organization Name</FormLabel>
+                    <FormLabel className="text-base font-medium text-[#202020]">Organization Name</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="My Publishing Company"
-                        className="h-12 shadow-soft border-0 bg-muted/30"
+                        className="h-12 shadow-soft border border-gray-200 bg-white focus:border-[#7073d1] focus:ring-2 focus:ring-[#7073d1]/20"
                         {...field}
                         disabled={isSubmitting}
                       />
                     </FormControl>
-                    <FormDescription className="content-tertiary">
+                    <FormDescription className="text-gray-600 text-sm">
                       The public name that will represent your organization on-chain and in all collaborations
                     </FormDescription>
                     <FormMessage />
@@ -156,33 +156,33 @@ export function CreateOrganizationDialog({
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base font-medium">Organization Type</FormLabel>
+                    <FormLabel className="text-base font-medium text-[#202020]">Organization Type</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       disabled={isSubmitting}
                     >
                       <FormControl>
-                        <SelectTrigger className="h-12 shadow-soft border-0 bg-muted/30">
+                        <SelectTrigger className="h-12 shadow-soft border border-gray-200 bg-white focus:border-[#7073d1] focus:ring-2 focus:ring-[#7073d1]/20">
                           <SelectValue placeholder="Select organization type" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="publishing_company">
+                      <SelectContent className="bg-white border border-gray-200 shadow-medium">
+                        <SelectItem value="publishing_company" className="hover:bg-gray-50 focus:bg-gray-50">
                           <div className="flex items-center gap-2 py-1">
-                            <Building2 className="h-4 w-4" />
-                            <span>Publishing Company</span>
+                            <Building2 className="h-4 w-4 text-[#7073d1]" />
+                            <span className="text-[#202020]">Publishing Company</span>
                           </div>
                         </SelectItem>
-                        <SelectItem value="individual_artist">
+                        <SelectItem value="individual_artist" className="hover:bg-gray-50 focus:bg-gray-50">
                           <div className="flex items-center gap-2 py-1">
-                            <Building2 className="h-4 w-4" />
-                            <span>Individual Artist</span>
+                            <Building2 className="h-4 w-4 text-[#7073d1]" />
+                            <span className="text-[#202020]">Individual Artist</span>
                           </div>
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormDescription className="content-tertiary">
+                    <FormDescription className="text-gray-600 text-sm">
                       This helps categorize your organization and enables appropriate features and workflows
                     </FormDescription>
                     <FormMessage />
@@ -195,16 +195,16 @@ export function CreateOrganizationDialog({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base font-medium">Description (Optional)</FormLabel>
+                    <FormLabel className="text-base font-medium text-[#202020]">Description (Optional)</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Brief description of your organization's mission and focus areas..."
-                        className="resize-none shadow-soft border-0 bg-muted/30 min-h-[100px]"
+                        className="resize-none shadow-soft border border-gray-200 bg-white focus:border-[#7073d1] focus:ring-2 focus:ring-[#7073d1]/20 min-h-[100px]"
                         {...field}
                         disabled={isSubmitting}
                       />
                     </FormControl>
-                    <FormDescription className="content-tertiary">
+                    <FormDescription className="text-gray-600 text-sm">
                       Help others understand your organization's purpose and specialization areas
                     </FormDescription>
                     <FormMessage />
@@ -217,17 +217,17 @@ export function CreateOrganizationDialog({
                 name="imageUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base font-medium">Logo URL (Optional)</FormLabel>
+                    <FormLabel className="text-base font-medium text-[#202020]">Logo URL (Optional)</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="https://example.com/your-logo.png"
                         type="url"
-                        className="h-12 shadow-soft border-0 bg-muted/30"
+                        className="h-12 shadow-soft border border-gray-200 bg-white focus:border-[#7073d1] focus:ring-2 focus:ring-[#7073d1]/20"
                         {...field}
                         disabled={isSubmitting}
                       />
                     </FormControl>
-                    <FormDescription className="content-tertiary">
+                    <FormDescription className="text-gray-600 text-sm">
                       Provide a logo or image URL that will represent your organization visually
                     </FormDescription>
                     <FormMessage />
@@ -236,27 +236,27 @@ export function CreateOrganizationDialog({
               />
             </div>
 
-            <div className="pt-4 border-t bg-muted/20 -mx-6 px-6 pb-6 mt-6">
+            <div className="pt-4 border-t border-gray-100 bg-gray-50 -mx-6 px-6 pb-6 mt-6">
               <div className="space-y-3 mb-6">
-                <h4 className="font-medium flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-primary" />
+                <h4 className="font-medium flex items-center gap-2 text-[#202020]">
+                  <Building2 className="h-4 w-4 text-[#7073d1]" />
                   What happens next?
                 </h4>
-                <ul className="space-y-2 content-secondary text-sm">
+                <ul className="space-y-2 text-gray-600 text-sm">
                   <li className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    <div className="h-1.5 w-1.5 bg-[#7073d1] rounded-full" />
                     Organization will be created in our database
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    <div className="h-1.5 w-1.5 bg-[#7073d1] rounded-full" />
                     On-chain collection will be deployed to Solana
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    <div className="h-1.5 w-1.5 bg-[#7073d1] rounded-full" />
                     You'll be set as the organization owner
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    <div className="h-1.5 w-1.5 bg-[#7073d1] rounded-full" />
                     Ready to add members and create IP works
                   </li>
                 </ul>
@@ -268,14 +268,14 @@ export function CreateOrganizationDialog({
                   variant="outline"
                   onClick={() => onOpenChange(false)}
                   disabled={isSubmitting}
-                  className="shadow-soft"
+                  className="shadow-soft border-gray-200 text-[#202020] hover:bg-gray-50"
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="shadow-medium hover:shadow-strong transition-all duration-200"
+                  className="shadow-medium hover:shadow-strong transition-all duration-200 bg-gradient-to-r from-[#7073d1] to-[#5a5db8] hover:from-[#5a5db8] hover:to-[#4a4d9e] text-white"
                 >
                   {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
                   Create Organization
