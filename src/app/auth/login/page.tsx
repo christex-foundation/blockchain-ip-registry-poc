@@ -1,40 +1,55 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
+import { usePrivyAuth } from '@/components/privy/use-privy-auth'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+  const { ready, authenticated, login, user } = usePrivyAuth()
 
-  const handleEmailLogin = async () => {
-    if (!email || !password) {
-      toast.error('Please fill in all fields')
-      return
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (ready && authenticated && user) {
+      toast.success('Already logged in! Redirecting to dashboard...')
+      router.push('/dashboard')
     }
+  }, [ready, authenticated, user, router])
 
-    setIsLoading(true)
-    
+  const handleLogin = async () => {
     try {
-      // TODO: Implement Privy email/password login
-      console.log('Privy login will be implemented here', { email })
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      toast.success('Login successful! Redirecting to dashboard...')
-      
-      // TODO: Navigate to dashboard
-    } catch {
-      toast.error('Login failed. Please check your credentials and try again.')
-    } finally {
-      setIsLoading(false)
+      await login()
+      // The useEffect above will handle the redirect after successful login
+    } catch (error) {
+      console.error('Login failed:', error)
+      toast.error('Login failed. Please try again.')
     }
+  }
+
+  // Don't render login form if already authenticated
+  if (!ready) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (authenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -58,48 +73,30 @@ export default function LoginPage() {
 
         {/* Login Form */}
         <Card className="glass p-8 space-y-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
+          <div className="space-y-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              Sign in with your email to access the platform. A Solana wallet will be automatically created for you.
+            </p>
           </div>
 
           <Button 
-            onClick={handleEmailLogin}
-            disabled={isLoading}
+            onClick={handleLogin}
             className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-3 rounded-lg font-medium glow"
           >
-            {isLoading ? 'Signing In...' : 'Sign In'}
+            Sign In with Privy
           </Button>
 
           <div className="text-center text-sm text-muted-foreground">
-            Secure authentication powered by Privy
+            <p>🔐 Secure authentication powered by Privy</p>
+            <p>🔑 Wallet creation and signing abstracted</p>
           </div>
         </Card>
 
-        {/* Development Notice */}
-        <div className="text-center text-xs text-muted-foreground">
-          <p>🚧 Development Mode</p>
-          <p>Privy integration will be implemented in Week 1</p>
+        {/* Features */}
+        <div className="text-center text-xs text-muted-foreground space-y-2">
+          <p>✅ Email/password authentication</p>
+          <p>✅ Automatic Solana wallet creation</p>
+          <p>✅ No manual wallet management required</p>
         </div>
       </div>
     </div>
