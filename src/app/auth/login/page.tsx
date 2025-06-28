@@ -1,12 +1,40 @@
 'use client'
 
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
 
 export default function LoginPage() {
-  const handleEmailLogin = () => {
-    // TODO: Implement Privy email/password login
-    console.log('Privy login will be implemented here')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleEmailLogin = async () => {
+    if (!email || !password) {
+      toast.error('Please fill in all fields')
+      return
+    }
+
+    setIsLoading(true)
+    
+    try {
+      // TODO: Implement Privy email/password login
+      console.log('Privy login will be implemented here', { email })
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      toast.success('Login successful! Redirecting to dashboard...')
+      
+      // TODO: Navigate to dashboard
+    } catch {
+      toast.error('Login failed. Please check your credentials and try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -32,28 +60,35 @@ export default function LoginPage() {
         <Card className="glass p-8 space-y-6">
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Email</label>
-              <input
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
                 type="email"
                 placeholder="admin@example.com"
-                className="w-full px-4 py-3 bg-input border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Password</label>
-              <input
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
                 type="password"
                 placeholder="••••••••"
-                className="w-full px-4 py-3 bg-input border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
               />
             </div>
           </div>
 
           <Button 
             onClick={handleEmailLogin}
+            disabled={isLoading}
             className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-3 rounded-lg font-medium glow"
           >
-            Sign In
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </Button>
 
           <div className="text-center text-sm text-muted-foreground">
