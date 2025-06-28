@@ -8,11 +8,11 @@ export default function IponchainnextFeature() {
 
   if (!account) {
     return (
-      <div className="max-w-4xl mx-auto">
-        <div className="hero py-[64px]">
-          <div className="hero-content text-center">
-            <WalletButton />
-          </div>
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="bg-card rounded-xl shadow-soft p-12 text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Connect Your Wallet</h2>
+          <p className="text-muted-foreground mb-6">Connect your wallet to interact with the IP OnChain program.</p>
+          <WalletButton />
         </div>
       </div>
     )

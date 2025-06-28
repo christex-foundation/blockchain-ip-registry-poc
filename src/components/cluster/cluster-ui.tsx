@@ -19,7 +19,7 @@ export function ExplorerLink({
       href={getExplorerLink({ ...link, cluster: cluster.cluster })}
       target="_blank"
       rel="noopener noreferrer"
-      className={className ? className : `link font-mono`}
+      className={className ? className : `text-primary hover:text-primary/80 underline font-mono transition-colors`}
     >
       {label}
     </a>
@@ -42,7 +42,7 @@ export function ClusterChecker({ children }: { children: ReactNode }) {
             Refresh
           </Button>
         }
-        className="mb-4"
+        className="mb-4 shadow-soft"
       >
         Error connecting to cluster <span className="font-bold">{cluster?.label}</span>.
       </AppAlert>

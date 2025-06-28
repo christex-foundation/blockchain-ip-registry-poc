@@ -22,22 +22,22 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
   }
 
   return (
-    <header className="relative z-50 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-soft">
       <div className="mx-auto max-w-7xl px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link 
-            className="flex items-center space-x-2 text-white hover:text-blue-400 transition-colors" 
+            className="flex items-center space-x-3 text-secondary hover:text-primary transition-colors duration-200" 
             href="/dashboard"
           >
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400">
-              <Zap className="h-4 w-4 text-white" />
+            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary shadow-medium">
+              <Zap className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold">IP OnChain</span>
+            <span className="text-xl font-bold tracking-tight">IP OnChain</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-2">
             {links.map(({ label, path }) => {
               const Icon = iconMap[label as keyof typeof iconMap]
               const active = isActive(path)
@@ -46,13 +46,17 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
                 <Link
                   key={path}
                   href={path}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  className={`group flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                     active
-                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                      ? 'bg-[#dcddff] text-[#7073d1] shadow-soft'
+                      : 'text-[#202020] hover:text-[#7073d1] hover:bg-gray-50'
                   }`}
                 >
-                  {Icon && <Icon className="h-4 w-4" />}
+                  {Icon && (
+                    <Icon className={`h-4 w-4 transition-colors ${
+                      active ? 'text-[#7073d1]' : 'text-gray-600 group-hover:text-[#7073d1]'
+                    }`} />
+                  )}
                   <span>{label}</span>
                 </Link>
               )
@@ -61,19 +65,21 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
 
           {/* User Menu */}
           <div className="hidden md:flex items-center space-x-4">
-            <div className="flex items-center space-x-2 text-sm">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
-                <span className="text-xs font-bold text-white">
+            <div className="flex items-center space-x-3 px-3 py-2 rounded-xl bg-gray-50 border">
+              <div className="w-8 h-8 rounded-full bg-[#7073d1] flex items-center justify-center shadow-soft">
+                <span className="text-sm font-bold text-white">
                   {userEmail?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
-              <span className="text-slate-300">{userEmail || 'User'}</span>
+              <span className="text-sm font-medium text-[#202020] max-w-[120px] truncate">
+                {userEmail || 'User'}
+              </span>
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={logout}
-              className="border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800/50 hover:border-slate-600"
+              className="border-gray-200 text-[#202020] hover:text-[#7073d1] hover:bg-[#dcddff]/50 hover:border-[#7073d1]/30 transition-all duration-200 shadow-soft"
             >
               Sign Out
             </Button>
@@ -83,7 +89,7 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden text-slate-300 hover:text-white hover:bg-slate-800/50" 
+            className="md:hidden text-[#202020] hover:text-[#7073d1] hover:bg-gray-50 rounded-xl" 
             onClick={() => setShowMenu(!showMenu)}
           >
             {showMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -92,8 +98,8 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
 
         {/* Mobile Menu */}
         {showMenu && (
-          <div className="md:hidden mt-4 pb-4 border-t border-slate-800/50">
-            <nav className="flex flex-col space-y-2 pt-4">
+          <div className="md:hidden mt-6 pb-4 border-t border-gray-100">
+            <nav className="flex flex-col space-y-2 pt-6">
               {links.map(({ label, path }) => {
                 const Icon = iconMap[label as keyof typeof iconMap]
                 const active = isActive(path)
@@ -103,31 +109,39 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
                     key={path}
                     href={path}
                     onClick={() => setShowMenu(false)}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`group flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                       active
-                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                        ? 'bg-[#dcddff] text-[#7073d1] shadow-soft'
+                        : 'text-[#202020] hover:text-[#7073d1] hover:bg-gray-50'
                     }`}
                   >
-                    {Icon && <Icon className="h-4 w-4" />}
+                    {Icon && (
+                      <Icon className={`h-4 w-4 transition-colors ${
+                        active ? 'text-[#7073d1]' : 'text-gray-600 group-hover:text-[#7073d1]'
+                      }`} />
+                    )}
                     <span>{label}</span>
                   </Link>
                 )
               })}
               
-              <div className="pt-4 mt-4 border-t border-slate-800/50">
-                <div className="flex items-center space-x-3 px-4 py-2 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+              <div className="pt-6 mt-4 border-t border-gray-100">
+                <div className="flex items-center space-x-3 px-4 py-3 mb-4 bg-gray-50 rounded-xl border">
+                  <div className="w-10 h-10 rounded-full bg-[#7073d1] flex items-center justify-center shadow-soft">
                     <span className="text-sm font-bold text-white">
                       {userEmail?.[0]?.toUpperCase() || 'U'}
                     </span>
                   </div>
-                  <span className="text-slate-300">{userEmail || 'User'}</span>
+                  <div className="flex-1 min-w-0">
+                    <span className="block text-sm font-medium text-[#202020] truncate">
+                      {userEmail || 'User'}
+                    </span>
+                  </div>
                 </div>
                 <Button
                   variant="outline"
                   onClick={logout}
-                  className="w-full border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800/50 hover:border-slate-600"
+                  className="w-full border-gray-200 text-[#202020] hover:text-[#7073d1] hover:bg-[#dcddff]/50 hover:border-[#7073d1]/30 transition-all duration-200 shadow-soft"
                 >
                   Sign Out
                 </Button>
