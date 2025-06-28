@@ -180,6 +180,85 @@ export interface Database {
           created_at?: string | null
         }
       }
+      usage_events: {
+        Row: {
+          id: string
+          work_id: string
+          event_type: 'stream' | 'download' | 'radio' | 'sync'
+          platform: string
+          play_count: number | null
+          unit_count: number | null
+          revenue_amount: number
+          currency: string | null
+          period_start: string
+          period_end: string
+          reported_at: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          work_id: string
+          event_type: 'stream' | 'download' | 'radio' | 'sync'
+          platform: string
+          play_count?: number | null
+          unit_count?: number | null
+          revenue_amount: number
+          currency?: string | null
+          period_start: string
+          period_end: string
+          reported_at?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          work_id?: string
+          event_type?: 'stream' | 'download' | 'radio' | 'sync'
+          platform?: string
+          play_count?: number | null
+          unit_count?: number | null
+          revenue_amount?: number
+          currency?: string | null
+          period_start?: string
+          period_end?: string
+          reported_at?: string | null
+          created_at?: string | null
+        }
+      }
+      royalty_earnings: {
+        Row: {
+          id: string
+          work_id: string
+          total_earnings: number
+          performance_earnings: number
+          mechanical_earnings: number
+          sync_earnings: number
+          last_calculated_at: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          work_id: string
+          total_earnings?: number
+          performance_earnings?: number
+          mechanical_earnings?: number
+          sync_earnings?: number
+          last_calculated_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          work_id?: string
+          total_earnings?: number
+          performance_earnings?: number
+          mechanical_earnings?: number
+          sync_earnings?: number
+          last_calculated_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+      }
     }
   }
 }
