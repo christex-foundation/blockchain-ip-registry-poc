@@ -21,7 +21,12 @@
       "mcp__supabase__apply_migration",
       "Bash(rm:*)",
       "Bash(npm run test:*)",
-      "WebFetch(domain:cdn.dribbble.com)"
+      "WebFetch(domain:cdn.dribbble.com)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npm config:*)",
+      "Bash(rg:*)",
+      "WebFetch(domain:docs.google.com)",
+      "Bash(npm run dev:*)"
     ],
     "deny": []
   }
