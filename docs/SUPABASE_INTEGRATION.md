@@ -26,8 +26,27 @@ The platform uses the following database structure in the `ip-onchain` Supabase 
 - `total_shares` (INTEGER, Default: 100) - Total percentage shares
 - `nft_mint_address` (VARCHAR, Nullable) - Solana NFT mint address
 - `metadata_uri` (TEXT, Nullable) - Metadata URI (can be IPFS or API endpoint)
+- `organization_id` (UUID, Foreign Key → organizations.id, Nullable) - Associated organization
+- `created_by_user_id` (UUID, Foreign Key → users.id, Nullable) - Creator user reference
 - `created_at` (TIMESTAMP)
 - `updated_at` (TIMESTAMP)
+
+#### `organizations`
+
+- `id` (UUID, Primary Key)
+- `name` (VARCHAR, Required) - Organization name
+- `collection_address` (VARCHAR, Unique, Nullable) - Metaplex Core collection address
+- `created_at` (TIMESTAMP WITH TIME ZONE)
+- `updated_at` (TIMESTAMP WITH TIME ZONE)
+
+#### `organization_members`
+
+- `id` (UUID, Primary Key)
+- `organization_id` (UUID, Foreign Key → organizations.id) - Organization reference
+- `user_id` (UUID, Foreign Key → users.id) - User reference
+- `role` (VARCHAR, Required) - 'owner', 'admin', or 'member'
+- `created_at` (TIMESTAMP WITH TIME ZONE)
+- **Constraints**: Unique combination of organization_id and user_id
 
 #### `contributors`
 

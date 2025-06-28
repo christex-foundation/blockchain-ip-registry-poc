@@ -13,6 +13,7 @@ import { usePrivy } from '@privy-io/react-auth'
 import { toast } from 'sonner'
 import { Plus, Minus, Loader2, Music, Users, FileText } from 'lucide-react'
 import { AuthGuard } from '@/components/privy/auth-guard'
+import { OrganizationSelector, CreateOrganizationDialog } from '@/components/organizations'
 
 // Validation schema
 const contributorSchema = z.object({
@@ -26,6 +27,7 @@ const workRegistrationSchema = z.object({
   isrc: z.string().optional(),
   description: z.string().optional(),
   imageUrl: z.string().url().optional().or(z.literal('')),
+  organizationId: z.string().optional(),
   contributors: z.array(contributorSchema).min(1, 'At least one contributor is required'),
 }).refine((data) => {
   const totalShares = data.contributors.reduce((sum, contributor) => sum + contributor.share, 0)
@@ -67,6 +69,8 @@ function RegisterWorkContent() {
   const { authenticated, getAccessToken } = usePrivy()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [result, setResult] = useState<MintResult | null>(null)
+  const [showCreateOrgDialog, setShowCreateOrgDialog] = useState(false)
+  const [selectedOrganization, setSelectedOrganization] = useState<string | undefined>()
 
   const {
     register,
@@ -82,6 +86,7 @@ function RegisterWorkContent() {
       isrc: '',
       description: '',
       imageUrl: '',
+      organizationId: '',
       contributors: [
         {
           name: '',
@@ -121,7 +126,10 @@ function RegisterWorkContent() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          organizationId: selectedOrganization,
+        }),
       })
 
       const result: MintResult = await response.json()
@@ -173,6 +181,16 @@ function RegisterWorkContent() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
+        {/* Organization Selector */}
+        <div className="lg:col-span-2">
+          <OrganizationSelector
+            value={selectedOrganization}
+            onValueChange={setSelectedOrganization}
+            showCreateOption={true}
+            onCreateClick={() => setShowCreateOrgDialog(true)}
+          />
+        </div>
+
         {/* Registration Form */}
         <Card>
           <CardHeader>
@@ -409,6 +427,15 @@ function RegisterWorkContent() {
           </Card>
         )}
       </div>
+
+      <CreateOrganizationDialog
+        open={showCreateOrgDialog}
+        onOpenChange={setShowCreateOrgDialog}
+        onSuccess={(org) => {
+          setSelectedOrganization(org.id)
+          setShowCreateOrgDialog(false)
+        }}
+      />
     </div>
   )
 }

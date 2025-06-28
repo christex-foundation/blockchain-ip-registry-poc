@@ -4,11 +4,13 @@ import {
   createWorkMetadata,
   createMetadataReference,
   mintWorkNFT,
+  createOrganizationAsset,
   getUserSolanaWalletFromPrivy,
 } from '@/lib/solana-server'
 import { WorkRepository } from '@/lib/repositories/work-repository'
 import { ContributorRepository } from '@/lib/repositories/contributor-repository'
 import { UserRepository } from '@/lib/repositories/user-repository'
+import { OrganizationRepository } from '@/lib/repositories/organization-repository'
 
 interface ContributorData {
   name: string
@@ -22,6 +24,7 @@ interface WorkRegistrationData {
   contributors: ContributorData[]
   description?: string
   imageUrl?: string
+  organizationId?: string
 }
 
 // ISRC format validation regex
@@ -64,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Ensure user exists in our database
-    await UserRepository.upsertUserByPrivyId({
+    const dbUser = await UserRepository.upsertUserByPrivyId({
       privy_user_id: verifiedClaims.userId,
       email: null, // Email will be available through Privy user data
       embedded_wallet_address: userWallet.address,
@@ -112,11 +115,28 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Validate organization if provided
+    let organization = null
+    if (workData.organizationId) {
+      organization = await OrganizationRepository.findById(workData.organizationId)
+      if (!organization) {
+        return NextResponse.json({ error: 'Organization not found' }, { status: 400 })
+      }
+
+      // Check if user is a member of the organization
+      const isMember = await OrganizationRepository.isMember(organization.id, verifiedClaims.userId)
+      if (!isMember) {
+        return NextResponse.json({ error: 'User is not a member of this organization' }, { status: 403 })
+      }
+    }
+
     // Create work record in database
     const work = await WorkRepository.createWork({
       title: workData.title,
       isrc: workData.isrc || null,
       total_shares: 100,
+      organization_id: workData.organizationId || null,
+      created_by_user_id: dbUser.id,
     })
 
     // Create contributors
@@ -148,23 +168,47 @@ export async function POST(request: NextRequest) {
     // Update work with metadata URI
     const updatedWork = await WorkRepository.updateMetadataUri(work.id, metadataUri)
 
-    // Mint NFT using server-side Metaplex Core
+    // Mint NFT using server-side Metaplex Core (with organization support)
     try {
-      const mintResult = await mintWorkNFT({
-        workId: work.id,
-        ownerAddress: userWallet.address,
-        metadata: {
-          name: coreMetadata.name,
-          uri: metadataUri,
-        },
-        contributors: workData.contributors.map((contributor) => ({
-          name: contributor.name,
-          wallet: contributor.walletAddress,
-          share: contributor.share,
-        })),
-        isrc: workData.isrc,
-        description: workData.description,
-      })
+      let mintResult
+
+      if (organization && organization.collection_address) {
+        // Mint as part of organization collection
+        mintResult = await createOrganizationAsset({
+          collectionAddress: organization.collection_address,
+          ownerAddress: userWallet.address,
+          metadata: {
+            name: coreMetadata.name,
+            uri: metadataUri,
+          },
+          workId: work.id,
+          contributors: workData.contributors.map((contributor) => ({
+            name: contributor.name,
+            wallet: contributor.walletAddress,
+            share: contributor.share,
+          })),
+          isrc: workData.isrc,
+          description: workData.description,
+          createdByUserId: verifiedClaims.userId,
+        })
+      } else {
+        // Mint as individual work (existing behavior)
+        mintResult = await mintWorkNFT({
+          workId: work.id,
+          ownerAddress: userWallet.address,
+          metadata: {
+            name: coreMetadata.name,
+            uri: metadataUri,
+          },
+          contributors: workData.contributors.map((contributor) => ({
+            name: contributor.name,
+            wallet: contributor.walletAddress,
+            share: contributor.share,
+          })),
+          isrc: workData.isrc,
+          description: workData.description,
+        })
+      }
 
       // Update work with NFT mint address (convert PublicKey to string)
       const finalWork = await WorkRepository.updateNftMintAddress(work.id, mintResult.assetId.toString())
@@ -196,7 +240,7 @@ export async function POST(request: NextRequest) {
         nft: {
           assetId: mintResult.assetId.toString(),
           signature: mintResult.signature,
-          explorerUrl: `https://explorer.solana.com/address/${mintResult.assetId.toString()}?cluster=devnet`,
+          explorerUrl: `https://core.metaplex.com/explorer/${mintResult.assetId.toString()}?env=devnet`,
           onChainAttributes: mintResult.onChainAttributes,
         },
       })

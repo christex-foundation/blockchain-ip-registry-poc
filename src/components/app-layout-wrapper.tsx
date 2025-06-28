@@ -7,6 +7,7 @@ import { AppLayout } from './app-layout'
 const dashboardLinks = [
   { label: 'Dashboard', path: '/dashboard' },
   { label: 'Register Work', path: '/register-work' },
+  { label: 'Organizations', path: '/organizations' },
   { label: 'Account', path: '/account' },
 ]
 

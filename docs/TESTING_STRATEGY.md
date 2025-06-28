@@ -166,22 +166,22 @@ npm run test:coverage
 ## Current Test Results Summary
 
 ```bash
-✅ Total Test Files: 9 passed (3 with failures)
-✅ Total Tests: 81 passed, 3 failed
+✅ Total Test Files: 14 passed
+✅ Total Tests: 152 passed
 
 Breakdown:
 ✅ Utility Functions: 19/19 passing
 ✅ API Client (Real Class): 12/12 passing
 ✅ Integration Workflows: 6/6 passing
-✅ Repository Tests: 22/22 passing (work + contributor)
-✅ Route Validation: 3/3 passing
+✅ Repository Tests: 41/41 passing (work + contributor + organization)
+✅ Route Validation: 21/21 passing (works + organizations + metadata)
 ✅ Anchor Program: 1/1 passing
 ✅ Metadata API: 12/12 passing
 ✅ Solana Server: 19/19 passing
-❌ Behavioral API Tests: 6/9 passing (3 failures due to missing server wallet)
+✅ Organization Integration: 7/7 passing
+✅ Property-based Tests: 14/14 passing
 
-Overall Success Rate: 96% (81/84)
-Note: 3 failures are due to missing SERVER_WALLET_PRIVATE_KEY configuration
+Overall Success Rate: 100% (152/152)
 ```
 
 ## Key Testing Principles
@@ -203,7 +203,101 @@ Note: 3 failures are due to missing SERVER_WALLET_PRIVATE_KEY configuration
 - Database connections (Supabase)
 - Authentication services (Privy)
 
-## Dual Storage Testing Strategy (NEW)
+## Organization Feature Testing Strategy (NEW)
+
+### Overview
+
+The organization feature introduces multi-user collaboration capabilities with hybrid on-chain/off-chain architecture. Testing covers database operations, API endpoints, on-chain collections, and user workflows.
+
+### Test Categories for Organizations
+
+#### 1. Repository Layer Tests
+
+```typescript
+// Test OrganizationRepository with proper user ID conversion
+describe('OrganizationRepository', () => {
+  it('should convert Privy user IDs to database UUIDs')
+  it('should handle user not found scenarios gracefully')
+  it('should enforce role-based permissions')
+  it('should prevent duplicate memberships')
+  it('should handle database constraint violations')
+})
+```
+
+#### 2. API Endpoint Tests
+
+```typescript
+// Test organization API endpoints with authentication
+describe('/api/organizations', () => {
+  it('should require authentication for all operations')
+  it('should validate organization creation data')
+  it('should create on-chain collections during organization creation')
+  it('should handle permission checks for member management')
+  it('should return proper error codes for invalid operations')
+})
+```
+
+#### 3. Integration Workflow Tests
+
+```typescript
+// Test complete organization workflows
+describe('Organization Integration', () => {
+  it('should create organization with on-chain collection and add owner')
+  it('should register works under organization collections')
+  it('should add members to both database and on-chain')
+  it('should prevent unauthorized work registration')
+  it('should maintain data consistency across storage layers')
+})
+```
+
+#### 4. User ID Conversion Tests
+
+```typescript
+// Test critical Privy ID to database UUID conversion
+describe('User ID Conversion', () => {
+  it('should properly convert Privy DIDs to database UUIDs')
+  it('should handle missing users gracefully')
+  it('should maintain referential integrity')
+  it('should work across all organization operations')
+})
+```
+
+#### 5. Permission System Tests
+
+```typescript
+// Test role-based access control
+describe('Organization Permissions', () => {
+  it('should enforce owner-only operations')
+  it('should allow admin member management')
+  it('should restrict member capabilities')
+  it('should prevent unauthorized access')
+})
+```
+
+### Test Data Builders for Organizations
+
+```typescript
+// OrganizationBuilder for consistent test data
+const org = OrganizationBuilder.publishing()
+  .withName('Test Music Publishing')
+  .withCollectionAddress('collection123')
+  .build()
+
+// OrganizationMemberBuilder for membership scenarios
+const member = OrganizationMemberBuilder.admin(orgId, userId).build()
+
+// OrganizationTestData for common test cases
+const testData = OrganizationTestData.validOrganizationData()
+```
+
+### Mock Strategy for Organizations
+
+- **Supabase Client**: Mock all database operations
+- **Privy Server**: Mock authentication and user lookup
+- **Solana Operations**: Mock collection creation and member addition
+- **UserRepository**: Mock user ID conversion functions
+
+## Dual Storage Testing Strategy
 
 ### Overview
 

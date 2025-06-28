@@ -44,6 +44,52 @@ export interface Database {
           created_at?: string | null
         }
       }
+      organizations: {
+        Row: {
+          id: string
+          name: string
+          collection_address: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          collection_address?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          collection_address?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+      }
+      organization_members: {
+        Row: {
+          id: string
+          organization_id: string
+          user_id: string
+          role: 'owner' | 'admin' | 'member'
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          user_id: string
+          role: 'owner' | 'admin' | 'member'
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          user_id?: string
+          role?: 'owner' | 'admin' | 'member'
+          created_at?: string | null
+        }
+      }
       works: {
         Row: {
           id: string
@@ -52,6 +98,8 @@ export interface Database {
           total_shares: number | null
           nft_mint_address: string | null
           metadata_uri: string | null
+          organization_id: string | null
+          created_by_user_id: string | null
           created_at: string | null
           updated_at: string | null
         }
@@ -62,6 +110,8 @@ export interface Database {
           total_shares?: number | null
           nft_mint_address?: string | null
           metadata_uri?: string | null
+          organization_id?: string | null
+          created_by_user_id?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -72,6 +122,8 @@ export interface Database {
           total_shares?: number | null
           nft_mint_address?: string | null
           metadata_uri?: string | null
+          organization_id?: string | null
+          created_by_user_id?: string | null
           created_at?: string | null
           updated_at?: string | null
         }

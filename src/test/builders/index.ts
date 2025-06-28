@@ -1,5 +1,6 @@
 export { WorkBuilder, ContributorBuilder, TestScenarios } from './work-builder'
 export { UserBuilder, AuthBuilder, AuthScenarios } from './user-builder'
+export { OrganizationBuilder, OrganizationMemberBuilder, OrganizationTestData } from './organization-builder'
 
 // Helper functions for common test patterns
 export const generateValidISRC = (country = 'US', year = '17', designation = '607834') => {
