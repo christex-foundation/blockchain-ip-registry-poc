@@ -124,7 +124,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-family-sans;
     background: radial-gradient(ellipse at top, rgba(139, 92, 246, 0.15) 0%, rgba(10, 10, 15, 1) 50%);
     min-height: 100vh;
   }

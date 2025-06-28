@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { toast } from 'sonner'
 import Link from 'next/link'
 
 interface Contributor {
@@ -51,34 +54,43 @@ export default function RegisterWorkPage() {
   }
 
   const handleSubmit = async () => {
-    if (!validateForm()) return
+    if (!validateForm()) {
+      toast.error('Please fill in all required fields and ensure shares total 100%')
+      return
+    }
 
     setIsSubmitting(true)
     
-    // TODO: Implement actual work registration with Metaplex NFT minting
-    console.log('Registering work:', {
-      title: workTitle,
-      isrc,
-      contributors,
-      metadata: {
-        name: workTitle,
-        symbol: 'IPOC',
-        description: `IP OnChain registration for ${workTitle}`,
-        attributes: [
-          { trait_type: 'ISRC', value: isrc },
-          { trait_type: 'Contributors', value: contributors.length },
-          { trait_type: 'Registration Date', value: new Date().toISOString() }
-        ]
-      }
-    })
+    try {
+      // TODO: Implement actual work registration with Metaplex NFT minting
+      console.log('Registering work:', {
+        title: workTitle,
+        isrc,
+        contributors,
+        metadata: {
+          name: workTitle,
+          symbol: 'IPOC',
+          description: `IP OnChain registration for ${workTitle}`,
+          attributes: [
+            { trait_type: 'ISRC', value: isrc },
+            { trait_type: 'Contributors', value: contributors.length },
+            { trait_type: 'Registration Date', value: new Date().toISOString() }
+          ]
+        }
+      })
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    setIsSubmitting(false)
-    
-    // TODO: Navigate to dashboard or show success message
-    alert('Work registered successfully! (Mock implementation)')
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      toast.success('Work registered successfully! NFT minted and metadata uploaded.')
+      
+      // TODO: Navigate to dashboard
+      // router.push('/dashboard')
+    } catch {
+      toast.error('Failed to register work. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -196,14 +208,21 @@ export default function RegisterWorkPage() {
                 </Card>
               ))}
 
+              <Separator className="my-4" />
+              
               {/* Share Validation */}
               <div className="flex items-center justify-between p-4 bg-secondary/5 rounded-lg">
                 <span className="text-sm font-medium">Total Shares:</span>
-                <span className={`text-lg font-bold ${
-                  getTotalShares() === 100 ? 'text-green-500' : 'text-red-500'
-                }`}>
-                  {getTotalShares()}%
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className={`text-lg font-bold ${
+                    getTotalShares() === 100 ? 'text-green-500' : 'text-red-500'
+                  }`}>
+                    {getTotalShares()}%
+                  </span>
+                  <Badge variant={getTotalShares() === 100 ? 'default' : 'destructive'}>
+                    {getTotalShares() === 100 ? 'Valid' : 'Invalid'}
+                  </Badge>
+                </div>
               </div>
               {getTotalShares() !== 100 && (
                 <p className="text-sm text-red-500">

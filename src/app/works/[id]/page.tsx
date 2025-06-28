@@ -3,6 +3,10 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 
@@ -71,8 +75,7 @@ export default function WorkDetailsPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
-    // TODO: Show toast notification
-    console.log('Copied to clipboard:', text)
+    toast.success('Copied to clipboard!')
   }
 
   return (
@@ -121,21 +124,32 @@ export default function WorkDetailsPage() {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Status</label>
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      {work.status}
-                    </span>
+                    <div className="mt-1">
+                      <Badge variant="default">{work.status}</Badge>
+                    </div>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Registration Date</label>
                     <p className="font-medium">{work.registrationDate}</p>
                   </div>
                 </div>
+                <Separator className="my-4" />
+                
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">NFT Mint Address</label>
                   <div className="flex items-center space-x-2 mt-1">
-                    <code className="text-xs bg-secondary/20 px-2 py-1 rounded font-mono">
-                      {work.mintAddress}
-                    </code>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <code className="text-xs bg-secondary/20 px-2 py-1 rounded font-mono cursor-pointer hover:bg-secondary/30">
+                            {work.mintAddress.slice(0, 12)}...{work.mintAddress.slice(-12)}
+                          </code>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="font-mono text-xs">{work.mintAddress}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                     <Button
                       size="sm"
                       variant="outline"
@@ -175,7 +189,9 @@ export default function WorkDetailsPage() {
                           </code>
                         </TableCell>
                         <TableCell>
-                          <span className="font-bold text-primary">{contributor.share}%</span>
+                          <Badge variant="secondary" className="font-bold">
+                            {contributor.share}%
+                          </Badge>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -213,9 +229,9 @@ export default function WorkDetailsPage() {
                           </code>
                         </TableCell>
                         <TableCell>
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                          <Badge variant="default">
                             {distribution.status}
-                          </span>
+                          </Badge>
                         </TableCell>
                       </TableRow>
                     ))}

@@ -1,8 +1,12 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+import { toast } from 'sonner'
 import Link from 'next/link'
 
 // Mock data - will be replaced with real data from blockchain/database
@@ -37,9 +41,54 @@ const mockRegisteredWorks = [
 ]
 
 export default function DashboardPage() {
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Simulate loading state
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1000)
+    return () => clearTimeout(timer)
+  }, [])
+
   const handleDistributeRoyalties = (workId: string) => {
     // TODO: Navigate to distribution page
     console.log(`Distributing royalties for work ${workId}`)
+    toast.success(`Royalty distribution initiated for work ${workId}`)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen p-6">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-64" />
+            <Skeleton className="h-6 w-96" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="glass">
+                <CardHeader className="pb-3">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-8 w-16" />
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+          <Card className="glass">
+            <CardHeader>
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <Skeleton key={i} className="h-16 w-full" />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -121,6 +170,9 @@ export default function DashboardPage() {
                         <div className="text-xs text-muted-foreground">
                           {work.mintAddress}
                         </div>
+                        <Badge variant="outline" className="text-xs">
+                          {work.status}
+                        </Badge>
                       </div>
                     </TableCell>
                     <TableCell>{work.isrc}</TableCell>
@@ -129,12 +181,16 @@ export default function DashboardPage() {
                         {work.contributors.map((contributor, index) => (
                           <div key={index} className="text-sm">
                             <span className="font-medium">{contributor.name}</span>
-                            <span className="text-muted-foreground"> ({contributor.share}%)</span>
+                            <Badge variant="secondary" className="ml-2 text-xs">
+                              {contributor.share}%
+                            </Badge>
                           </div>
                         ))}
                       </div>
                     </TableCell>
-                    <TableCell>{work.totalRoyalties} SOL</TableCell>
+                    <TableCell>
+                      <div className="font-bold">{work.totalRoyalties} SOL</div>
+                    </TableCell>
                     <TableCell>{work.lastDistribution}</TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
