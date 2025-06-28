@@ -1,23 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyPrivyToken } from '@/lib/privy-server'
-
-// Define Work interface
-interface Work {
-  id: string
-  title: string
-  isrc?: string
-  contributors: Array<{
-    name: string
-    wallet: string
-    share: number
-  }>
-  metadataUri: string
-  createdAt: string
-  status: string
-}
-
-// Mock data store - in production, you'd use a database
-const mockWorks = new Map<string, Work[]>()
+import { WorkRepository } from '@/lib/repositories/work-repository'
 
 export async function GET(request: NextRequest) {
   try {
@@ -35,43 +18,31 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 })
     }
 
-    // Get user's works from mock storage
-    const userWorks = mockWorks.get(verifiedClaims.userId) || []
+    // Get all works with contributors from database
+    const worksWithContributors = await WorkRepository.findAllWithContributors()
 
-    // Add some mock data for demonstration
-    if (userWorks.length === 0) {
-      const mockData: Work[] = [
-        {
-          id: 'work_demo_1',
-          title: 'Sample Track #1',
-          isrc: 'USRC12345678',
-          contributors: [
-            { name: 'Artist One', wallet: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM', share: 60 },
-            { name: 'Producer', wallet: 'ByT7spdPJyxfLYD7bGhRZwXzGhWAhYWzXHJ7qJGbGqmH', share: 40 },
-          ],
-          metadataUri: 'https://ipfs.io/ipfs/QmExampleDemo1',
-          createdAt: new Date('2024-01-15').toISOString(),
-          status: 'minted',
-        },
-        {
-          id: 'work_demo_2',
-          title: 'Collaborative Beat',
-          isrc: 'USRC87654321',
-          contributors: [
-            { name: 'Artist Two', wallet: '3kJKXfNKKfXHXYjHQqbKxKvXHXYjHQqbKxKvXHXYjHQq', share: 50 },
-            { name: 'Co-writer', wallet: '4mLLYgOLLgYHYkIIRrcLyLwYHYkIIRrcLyLwYHYkIIRr', share: 50 },
-          ],
-          metadataUri: 'https://ipfs.io/ipfs/QmExampleDemo2',
-          createdAt: new Date('2024-01-20').toISOString(),
-          status: 'minted',
-        },
-      ]
-      mockWorks.set(verifiedClaims.userId, mockData)
-    }
+    // Transform to API format
+    const works = worksWithContributors.map((work) => ({
+      id: work.id,
+      title: work.title,
+      isrc: work.isrc,
+      contributors: work.contributors.map((contributor) => ({
+        id: contributor.id,
+        name: contributor.name,
+        walletAddress: contributor.wallet_address,
+        share: contributor.royalty_share,
+      })),
+      metadataUri: work.metadata_uri,
+      mintAddress: work.nft_mint_address,
+      createdAt: work.created_at,
+      updatedAt: work.updated_at,
+      status: work.nft_mint_address ? 'minted' : 'pending',
+    }))
 
     return NextResponse.json({
       success: true,
-      works: mockWorks.get(verifiedClaims.userId) || [],
+      works: works,
+      count: works.length,
     })
   } catch (error) {
     console.error('Works list error:', error)
