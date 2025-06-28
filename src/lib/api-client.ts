@@ -46,7 +46,7 @@ export class ApiClient {
       isrc?: string
       contributors: Array<{
         name: string
-        wallet: string
+        walletAddress: string
         share: number
       }>
       description?: string

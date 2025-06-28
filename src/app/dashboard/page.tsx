@@ -182,7 +182,7 @@ function DashboardContent() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {works.length === 0 ? (
+            {works?.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-muted-foreground mb-4">No works registered yet</p>
                 <Link href="/register-work">
