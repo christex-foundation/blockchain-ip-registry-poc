@@ -113,127 +113,175 @@ export function CreateOrganizationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" />
+      <DialogContent className="sm:max-w-[500px] shadow-strong border-0">
+        <DialogHeader className="space-y-3 pb-6">
+          <DialogTitle className="flex items-center gap-3 text-2xl">
+            <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+              <Building2 className="h-6 w-6 text-primary" />
+            </div>
             Create Organization
           </DialogTitle>
-          <DialogDescription>
-            Create a new organization with an on-chain collection for managing intellectual property works.
+          <DialogDescription className="content-secondary text-balance">
+            Create a new organization with an on-chain collection for collaborative intellectual property management. This will establish your organization on the Solana blockchain.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organization Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="My Publishing Company"
-                      {...field}
-                      disabled={isSubmitting}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    The public name of your organization
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organization Type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    disabled={isSubmitting}
-                  >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid gap-6">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">Organization Name</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select organization type" />
-                      </SelectTrigger>
+                      <Input
+                        placeholder="My Publishing Company"
+                        className="h-12 shadow-soft border-0 bg-muted/30"
+                        {...field}
+                        disabled={isSubmitting}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="publishing_company">Publishing Company</SelectItem>
-                      <SelectItem value="individual_artist">Individual Artist</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    The type of organization for proper categorization
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormDescription className="content-tertiary">
+                      The public name that will represent your organization on-chain and in all collaborations
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description (Optional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Brief description of your organization..."
-                      className="resize-none"
-                      {...field}
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">Organization Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
                       disabled={isSubmitting}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Optional description for your organization
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    >
+                      <FormControl>
+                        <SelectTrigger className="h-12 shadow-soft border-0 bg-muted/30">
+                          <SelectValue placeholder="Select organization type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="publishing_company">
+                          <div className="flex items-center gap-2 py-1">
+                            <Building2 className="h-4 w-4" />
+                            <span>Publishing Company</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="individual_artist">
+                          <div className="flex items-center gap-2 py-1">
+                            <Building2 className="h-4 w-4" />
+                            <span>Individual Artist</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription className="content-tertiary">
+                      This helps categorize your organization and enables appropriate features and workflows
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL (Optional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://example.com/logo.png"
-                      type="url"
-                      {...field}
-                      disabled={isSubmitting}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Optional logo or image for your organization
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">Description (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Brief description of your organization's mission and focus areas..."
+                        className="resize-none shadow-soft border-0 bg-muted/30 min-h-[100px]"
+                        {...field}
+                        disabled={isSubmitting}
+                      />
+                    </FormControl>
+                    <FormDescription className="content-tertiary">
+                      Help others understand your organization's purpose and specialization areas
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Organization
-              </Button>
-            </DialogFooter>
+              <FormField
+                control={form.control}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">Logo URL (Optional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="https://example.com/your-logo.png"
+                        type="url"
+                        className="h-12 shadow-soft border-0 bg-muted/30"
+                        {...field}
+                        disabled={isSubmitting}
+                      />
+                    </FormControl>
+                    <FormDescription className="content-tertiary">
+                      Provide a logo or image URL that will represent your organization visually
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="pt-4 border-t bg-muted/20 -mx-6 px-6 pb-6 mt-6">
+              <div className="space-y-3 mb-6">
+                <h4 className="font-medium flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  What happens next?
+                </h4>
+                <ul className="space-y-2 content-secondary text-sm">
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    Organization will be created in our database
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    On-chain collection will be deployed to Solana
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    You'll be set as the organization owner
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 bg-primary rounded-full" />
+                    Ready to add members and create IP works
+                  </li>
+                </ul>
+              </div>
+
+              <DialogFooter className="gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                  disabled={isSubmitting}
+                  className="shadow-soft"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="shadow-medium hover:shadow-strong transition-all duration-200"
+                >
+                  {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                  Create Organization
+                </Button>
+              </DialogFooter>
+            </div>
           </form>
         </Form>
       </DialogContent>

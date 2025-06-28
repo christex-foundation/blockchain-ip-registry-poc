@@ -17,6 +17,11 @@ import {
   Crown,
   Shield,
   User,
+  BarChart3,
+  Activity,
+  Clock,
+  CheckCircle,
+  ArrowLeft,
 } from 'lucide-react'
 import { AddMemberDialog } from './add-member-dialog'
 import Link from 'next/link'
@@ -118,7 +123,7 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
       case 'owner':
         return <Crown className="h-4 w-4 text-yellow-500" />
       case 'admin':
-        return <Shield className="h-4 w-4 text-blue-500" />
+        return <Shield className="h-4 w-4 text-primary" />
       default:
         return <User className="h-4 w-4 text-gray-500" />
     }
@@ -137,39 +142,65 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-4 w-48" />
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <div className="lg:col-span-2 space-y-3">
+            <Skeleton className="h-12 w-80" />
+            <Skeleton className="h-5 w-96" />
           </div>
-          <Skeleton className="h-10 w-32" />
+          <div className="lg:justify-self-end">
+            <Skeleton className="h-12 w-36" />
+          </div>
         </div>
         
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <Skeleton className="h-6 w-48" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-            </CardContent>
-          </Card>
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i} className="shadow-soft">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-12 w-12 rounded-lg" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-6 w-8" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        
+        {/* Content Grid */}
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="shadow-soft">
+              <CardHeader>
+                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-4 w-32" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardContent>
+            </Card>
+          </div>
           
-          <Card>
+          <Card className="shadow-soft">
             <CardHeader>
               <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-4 w-28" />
             </CardHeader>
             <CardContent className="space-y-4">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="flex items-center gap-3">
+                <div key={i} className="flex items-center gap-3 p-3 border rounded-lg">
                   <Skeleton className="h-10 w-10 rounded-full" />
                   <div className="space-y-1">
                     <Skeleton className="h-4 w-24" />
                     <Skeleton className="h-3 w-16" />
                   </div>
+                  <Skeleton className="h-6 w-16 ml-auto" />
                 </div>
               ))}
             </CardContent>
@@ -181,133 +212,278 @@ export function OrganizationDetail({ organizationId }: OrganizationDetailProps) 
 
   if (error || !organization) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center">
-            <p className="text-destructive">
-              {error || 'Organization not found'}
-            </p>
-            <Button asChild variant="outline" className="mt-4">
-              <Link href="/organizations">Back to Organizations</Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="space-y-8">
+        <div className="flex items-center gap-4">
+          <Button asChild variant="outline" size="sm" className="shadow-soft">
+            <Link href="/organizations">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Link>
+          </Button>
+        </div>
+        
+        <Card className="shadow-soft border-0">
+          <CardContent className="pt-12 pb-12">
+            <div className="text-center space-y-4 max-w-md mx-auto">
+              <div className="h-20 w-20 mx-auto bg-destructive/10 rounded-full flex items-center justify-center">
+                <Building2 className="h-10 w-10 text-destructive" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="content-primary">Organization not found</h3>
+                <p className="content-secondary">
+                  {error || 'The organization you are looking for does not exist or you do not have access to it.'}
+                </p>
+              </div>
+              <Button asChild variant="outline" className="shadow-soft">
+                <Link href="/organizations">Back to Organizations</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Building2 className="h-8 w-8" />
+    <div className="space-y-8">
+      {/* Header Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-2 space-y-3">
+          <div className="flex items-center gap-4">
+            <Button asChild variant="outline" size="sm" className="shadow-soft">
+              <Link href="/organizations">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Link>
+            </Button>
+          </div>
+          <h1 className="text-4xl font-bold text-balance flex items-center gap-3">
+            <Building2 className="h-10 w-10 text-primary" />
             {organization.name}
           </h1>
-          <p className="text-muted-foreground">
-            Organization details and member management
+          <p className="content-secondary text-balance">
+            Comprehensive organization management with on-chain member verification and collaborative IP workflows
           </p>
         </div>
-        <Button onClick={() => setShowAddMemberDialog(true)}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add Member
-        </Button>
+        <div className="lg:justify-self-end">
+          <Button 
+            onClick={() => setShowAddMemberDialog(true)}
+            className="h-12 px-6 shadow-medium hover:shadow-strong transition-all duration-200"
+          >
+            <UserPlus className="mr-2 h-5 w-5" />
+            Add Member
+          </Button>
+        </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Organization Details</CardTitle>
-            <CardDescription>
-              Basic information and on-chain status
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">
-                Created {new Date(organization.created_at || '').toLocaleDateString()}
-              </span>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Hash className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">Collection Status</span>
+      {/* Statistics Dashboard */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="shadow-soft border-0 bg-gradient-to-br from-primary/5 to-primary/10">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Users className="h-6 w-6 text-primary" />
               </div>
-              {organization.collection_address ? (
-                <div className="space-y-2">
-                  <Badge variant="default" className="flex items-center gap-1 w-fit">
-                    <ExternalLink className="h-3 w-3" />
-                    On-chain Collection Active
-                  </Badge>
-                  <div className="text-xs text-muted-foreground font-mono bg-muted p-2 rounded">
-                    {organization.collection_address}
-                  </div>
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="w-fit"
-                  >
-                    <Link
-                      href={`https://core.metaplex.com/explorer/collection/${organization.collection_address}?env=devnet`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      View on Solana Explorer
-                    </Link>
-                  </Button>
-                </div>
-              ) : (
-                <Badge variant="secondary">Setting up collection...</Badge>
-              )}
+              <div>
+                <p className="content-tertiary">Total Members</p>
+                <p className="text-2xl font-bold">{onChainMembers.length}</p>
+              </div>
             </div>
           </CardContent>
         </Card>
+        
+        <Card className="shadow-soft border-0 bg-gradient-to-br from-accent/30 to-accent/40">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 bg-accent/40 rounded-lg flex items-center justify-center">
+                <Activity className="h-6 w-6 text-secondary" />
+              </div>
+              <div>
+                <p className="content-tertiary">Collection Status</p>
+                <p className="text-lg font-semibold">
+                  {organization.collection_address ? 'Active' : 'Setup'}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="shadow-soft border-0 bg-gradient-to-br from-secondary/5 to-secondary/10">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 bg-secondary/10 rounded-lg flex items-center justify-center">
+                <Crown className="h-6 w-6 text-secondary" />
+              </div>
+              <div>
+                <p className="content-tertiary">Owners</p>
+                <p className="text-2xl font-bold">
+                  {onChainMembers.filter(m => m.role === 'owner').length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="shadow-soft border-0 bg-gradient-to-br from-green-50 to-green-100">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <p className="content-tertiary">Created</p>
+                <p className="text-sm font-semibold">
+                  {new Date(organization.created_at || '').toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-        <Card>
-          <CardHeader>
+      {/* Main Content Grid */}
+      <div className="grid gap-8 lg:grid-cols-3">
+        {/* Organization Details */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="shadow-soft border-0">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Hash className="h-5 w-5" />
+                Organization Details
+              </CardTitle>
+              <CardDescription>
+                Comprehensive information and on-chain verification status
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Collection Status */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-primary" />
+                  <span className="font-medium">Collection Status</span>
+                </div>
+                
+                {organization.collection_address ? (
+                  <div className="space-y-4 p-4 bg-primary/5 rounded-lg border border-primary/10">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="default" className="flex items-center gap-1 shadow-soft">
+                        <ExternalLink className="h-3 w-3" />
+                        On-chain Collection Active
+                      </Badge>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <p className="content-tertiary">Collection Address</p>
+                      <div className="p-3 bg-background/80 rounded-lg border">
+                        <p className="text-sm font-mono text-primary break-all">
+                          {organization.collection_address}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="shadow-soft"
+                    >
+                      <Link
+                        href={`https://core.metaplex.com/explorer/collection/${organization.collection_address}?env=devnet`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        View on Solana Explorer
+                      </Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="secondary" className="shadow-soft">
+                        <Clock className="h-3 w-3 mr-1" />
+                        Setting up collection...
+                      </Badge>
+                    </div>
+                    <p className="content-secondary text-sm">
+                      Your on-chain collection is being initialized. This process may take a few minutes.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Creation Info */}
+              <Separator />
+              <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="content-tertiary">Organization Created</p>
+                  <p className="font-medium">
+                    {new Date(organization.created_at || '').toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Members Panel */}
+        <Card className="shadow-soft border-0">
+          <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
               Members ({onChainMembers.length})
             </CardTitle>
             <CardDescription>
-              Organization members with their roles
+              Organization members with roles and permissions
             </CardDescription>
           </CardHeader>
           <CardContent>
             {onChainMembers.length === 0 ? (
-              <div className="text-center py-4">
-                <Users className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  No members found. Add members to get started.
-                </p>
+              <div className="text-center py-8 space-y-4">
+                <div className="h-16 w-16 mx-auto bg-muted/50 rounded-full flex items-center justify-center">
+                  <Users className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-medium">No members yet</h4>
+                  <p className="content-secondary text-sm text-balance">
+                    Add members to start collaborating on intellectual property works.
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="space-y-3">
                 {onChainMembers.map((member) => (
                   <div
                     key={member.userId}
-                    className="flex items-center justify-between p-3 border rounded-lg"
+                    className="group p-4 border rounded-lg hover:shadow-soft transition-all duration-200 hover:border-primary/20"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 bg-muted rounded-full flex items-center justify-center">
-                        {getRoleIcon(member.role)}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 bg-gradient-to-br from-primary/10 to-accent/20 rounded-full flex items-center justify-center">
+                          {getRoleIcon(member.role)}
+                        </div>
+                        <div>
+                          <p className="font-medium group-hover:text-primary transition-colors">
+                            {member.name}
+                          </p>
+                          <p className="content-tertiary text-sm flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            Joined {new Date(parseInt(member.joined)).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{member.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Joined {new Date(parseInt(member.joined)).toLocaleDateString()}
-                        </p>
-                      </div>
+                      <Badge 
+                        variant={getRoleBadgeVariant(member.role)} 
+                        className="shadow-soft"
+                      >
+                        {member.role}
+                      </Badge>
                     </div>
-                    <Badge variant={getRoleBadgeVariant(member.role)}>
-                      {member.role}
-                    </Badge>
                   </div>
                 ))}
               </div>

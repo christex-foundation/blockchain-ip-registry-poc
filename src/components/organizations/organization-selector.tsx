@@ -76,73 +76,103 @@ export function OrganizationSelector({
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
+      <Card className="shadow-soft border-0">
+        <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-4 w-4" />
+            <Building2 className="h-5 w-5 text-primary" />
             Organization
           </CardTitle>
-          <CardDescription>Loading organizations...</CardDescription>
+          <CardDescription>Loading available organizations...</CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <div className="h-10 bg-muted/50 rounded-lg animate-pulse" />
+            <p className="content-tertiary text-sm">Finding your organizations...</p>
+          </div>
+        </CardContent>
       </Card>
     )
   }
 
   if (error) {
     return (
-      <Card>
-        <CardHeader>
+      <Card className="shadow-soft border-0 border-destructive/20">
+        <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2 text-destructive">
-            <Building2 className="h-4 w-4" />
+            <Building2 className="h-5 w-5" />
             Organization
           </CardTitle>
-          <CardDescription>Error: {error}</CardDescription>
+          <CardDescription>Unable to load organizations</CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="p-3 bg-destructive/5 rounded-lg">
+            <p className="text-sm text-destructive">Error: {error}</p>
+          </div>
+        </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="shadow-soft border-0">
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2">
-          <Building2 className="h-4 w-4" />
-          Organization
+          <Building2 className="h-5 w-5 text-primary" />
+          Organization Selection
         </CardTitle>
         <CardDescription>
-          Choose an organization to mint this work under, or leave empty for personal work
+          Choose an organization to collaborate on this work, or select personal work for individual ownership
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <Select value={value || 'none'} onValueChange={handleValueChange}>
-          <SelectTrigger>
+          <SelectTrigger className="h-12 shadow-soft border-0 bg-muted/30">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="none">
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                <span>Personal Work</span>
+              <div className="flex items-center gap-3 py-2">
+                <div className="h-8 w-8 bg-muted rounded-full flex items-center justify-center">
+                  <User className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="font-medium">Personal Work</p>
+                  <p className="text-xs text-muted-foreground">Individual intellectual property</p>
+                </div>
               </div>
             </SelectItem>
             {organizations.map((org) => (
               <SelectItem key={org.id} value={org.id}>
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4" />
-                  <span>{org.name}</span>
-                  {org.collection_address && (
-                    <Badge variant="secondary" className="ml-2">
-                      On-chain
-                    </Badge>
-                  )}
+                <div className="flex items-center gap-3 py-2">
+                  <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
+                    <Building2 className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{org.name}</span>
+                      {org.collection_address && (
+                        <Badge variant="secondary" className="text-xs shadow-soft">
+                          On-chain
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Collaborative organization
+                    </p>
+                  </div>
                 </div>
               </SelectItem>
             ))}
             {showCreateOption && (
               <SelectItem value="create">
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4" />
-                  <span>+ Create New Organization</span>
+                <div className="flex items-center gap-3 py-2">
+                  <div className="h-8 w-8 bg-accent/40 rounded-full flex items-center justify-center">
+                    <Building2 className="h-4 w-4 text-secondary" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-primary">+ Create New Organization</p>
+                    <p className="text-xs text-muted-foreground">Start a new collaborative group</p>
+                  </div>
                 </div>
               </SelectItem>
             )}
@@ -150,9 +180,26 @@ export function OrganizationSelector({
         </Select>
         
         {organizations.length === 0 && (
-          <p className="text-sm text-muted-foreground mt-2">
-            No organizations found. {showCreateOption ? 'Create one to get started.' : ''}
-          </p>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <p className="content-secondary text-sm text-balance">
+              No organizations found. {showCreateOption ? 'Create one to start collaborating with others.' : 'Contact an organization owner to be added as a member.'}
+            </p>
+          </div>
+        )}
+
+        {organizations.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div className="p-3 bg-primary/5 rounded-lg text-center">
+              <p className="font-semibold text-primary text-lg">{organizations.length}</p>
+              <p className="content-tertiary text-sm">Available Organizations</p>
+            </div>
+            <div className="p-3 bg-accent/20 rounded-lg text-center">
+              <p className="font-semibold text-secondary text-lg">
+                {organizations.filter(org => org.collection_address).length}
+              </p>
+              <p className="content-tertiary text-sm">On-chain Collections</p>
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>
